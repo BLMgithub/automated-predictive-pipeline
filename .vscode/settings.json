@@ -1,0 +1,18 @@
+{
+    "sqlfluff.config": "${workspaceFolder}/.vscode/.sqlfluff",
+    "sqlfluff.format.enabled": true,
+    "sqlfluff.dialect": "bigquery",
+    "sqlfluff.format.languages": [
+        "sql-bigquery",
+        "bqsql"
+    ],
+    // Move to .code-workspace
+    // "files.associations": {
+    //     "*.sql": "bqsql",
+    //     ".sqlfluff": "ini"
+    // },
+    "[bqsql]": {
+        "editor.defaultFormatter": "sqlfluff.vscode-sqlfluff",
+        "editor.formatOnSave": true
+    },
+}
