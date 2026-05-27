@@ -15,4 +15,9 @@
         "editor.defaultFormatter": "sqlfluff.vscode-sqlfluff",
         "editor.formatOnSave": true
     },
+    "[python]": {
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
+    },
 }

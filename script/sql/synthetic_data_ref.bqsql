@@ -1,0 +1,55 @@
+/* ============================================================
+    Project: automated-predictive-pipeline
+    File: data_exploration.sql
+    Author: Bryan Melvida
+   
+    Purpose:
+    - Extract source benchmarks/metrics for synthetic data modeling
+   ============================================================ */
+
+---------------------------------------------------------------
+-- EXTRACT DISTINCT VALUES
+---------------------------------------------------------------
+
+SELECT
+    DISTINCT traffic_source
+FROM `automated-predictive-pipeline.core_ecom_dataset.users`;
+
+SELECT
+    DISTINCT category
+FROM `automated-predictive-pipeline.core_ecom_dataset.products`;
+
+---------------------------------------------------------------
+-- EXTRACT BENCHMARKS AND HISTORICAL PEAKS
+---------------------------------------------------------------
+
+SELECT
+    MIN(daily_revenue) AS min_revenue,
+    AVG(daily_revenue) AS avg_revenue,
+    MAX(daily_revenue) AS max_revenue,
+FROM (
+    SELECT
+        DATE(created_at) AS _date,
+        SUM(sale_price) AS daily_revenue
+    FROM `automated-predictive-pipeline.core_ecom_dataset.order_items`
+    GROUP BY _date
+);
+
+
+SELECT
+    MIN(DATE(created_at)) AS min_date,
+    MAX(DATE(created_at)) AS max_date
+FROM `automated-predictive-pipeline.core_ecom_dataset.order_items`;
+
+
+-- Extract top 3 peak revenue days for each year
+SELECT
+    EXTRACT(YEAR FROM created_at) AS _year,
+    DATE(created_at) AS peak_date,
+    SUM(sale_price) AS revenue,
+FROM `automated-predictive-pipeline.core_ecom_dataset.order_items`
+GROUP BY 1,2
+QUALIFY ROW_NUMBER() OVER(PARTITION BY _year ORDER BY revenue DESC) <= 3
+ORDER BY 
+    _year, 
+    revenue DESC;

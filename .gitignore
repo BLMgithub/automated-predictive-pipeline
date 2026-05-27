@@ -1,6 +1,9 @@
 # personal configs
 project.code-workspace
 
+# temporary directories
+troubleshoots/
+
 # Terraform
 
 **/.terraform/*

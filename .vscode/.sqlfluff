@@ -3,9 +3,6 @@
 dialect = bigquery
 sql_file_exts = .sql,.sql.j2,.dml,.ddl,.bqsql
 
-# Tells it to ignore templates if you write raw SQL
-templater = raw
-
 # Optional: Max line length for formatting
 max_line_length = 120
 
