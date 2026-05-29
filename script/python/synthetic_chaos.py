@@ -45,7 +45,7 @@ PEAK_DATES = [
 # Mapping Whitelists
 SOURCE_MAP = {
     "Search": ["Google_SEM", "Bing_Ads", "Search_Direct"],
-    "Social": ["FB_Ads", "Instagram_Promo", "Facebook_Feed"],
+    "Facebook": ["FB_Ads", "Facebook_Feed"],
     "Email": ["Newsletter_V1", "Email_Blast", "Promo_Code"],
     "Display": ["GDN_Banner", "Display_Ad_Net"],
     "Organic": ["Unknown_Blog", "Ghost_Traffic"],
