@@ -1,0 +1,202 @@
+/* ============================================================
+    Project: automated-predictive-pipeline
+    File: validate_transformation_logic.bqsql
+    Author: Bryan Melvida
+
+    Purpose:
+      - Tests chaotic raw-data edge cases:
+        - bad dates
+        - negative spend
+        - fuzzy source mapping
+      - Validates grain-aligned joins of:
+        - marketing spend with ecommerce sales tables
+        - marketing spend with logistics dimension tables
+
+    Structure:
+    1. UNIT TESTS: Pure Mock logic to test Chaos Handling.
+    2. INTEGRATION TEST: Mock Marketing + Real Source Tables.
+   ============================================================ */
+
+---------------------------------------------------------------
+-- VALIDATE: Chaos Data Handling logic
+---------------------------------------------------------------
+
+-- Mocking bad dates, negative spend, and fuzzy sources
+WITH test_chaos_handling AS (
+  SELECT
+    'CMP-001' AS campaign_id,
+    '05/25/26' AS raw_date,
+    -50.0 AS spend,
+    'FB_ads' AS utm_source,
+    'Dresses' AS target_category
+  UNION ALL
+  SELECT
+    'CMP-002' AS campaign_id,
+    '2026-05-25' AS raw_date,
+    500.0 AS spend,
+    'Google_SEM' AS utm_source,
+    'Dresses' AS target_category
+  UNION ALL
+  SELECT
+    'CMP-003' AS campaign_id,
+    NULL AS raw_date,
+    200.0 AS spend,
+    'Email_Blast' AS utm_source,
+    'Accessories' AS target_category
+),
+
+test_silver_logic AS (
+  SELECT
+    campaign_id,
+    spend,
+    SAFE.PARSE_DATE('%m/%d/%y', raw_date) AS parsed_date_alt,
+    SAFE.PARSE_DATE('%Y-%m-%d', raw_date) AS parsed_date_std,
+    CASE
+      WHEN utm_source IN ('FB_ads', 'Facebook_feeds') THEN 'Facebook'
+      WHEN utm_source IN ('Google_SEM', 'Bing_Ads') THEN 'Search'
+      ELSE 'Other'
+    END AS clean_source
+  FROM test_chaos_handling
+)
+
+-- ASSERTION: Should return correct parsed dates and mapped to canonical sources
+SELECT *
+FROM test_silver_logic;
+
+
+---------------------------------------------------------------
+-- VALIDATE: INTEGRATION LOGIC (Fact table)
+---------------------------------------------------------------
+
+WITH merged_core_source AS (
+  SELECT
+    usr.traffic_source,
+    prd.category AS product_category,
+    itm.sale_price AS sales_revenue,
+    ord.order_id,
+    ord.user_id,
+    DATE(ord.created_at) AS event_date
+  FROM `automated-predictive-pipeline.core_ecom_dataset.users` AS usr
+  LEFT JOIN `automated-predictive-pipeline.core_ecom_dataset.orders` AS ord
+    ON usr.id = ord.user_id
+  LEFT JOIN `automated-predictive-pipeline.core_ecom_dataset.order_items` AS itm
+    ON ord.order_id = itm.order_id
+  LEFT JOIN `automated-predictive-pipeline.core_ecom_dataset.products` AS prd
+    ON itm.product_id = prd.id
+),
+
+mock_marketing_spend_daily AS (
+  SELECT
+    'CMP-1234-A' AS campaign_id,
+    1000 AS spend_usd,
+    DATE('2026-05-25') AS campaign_date
+),
+
+mock_campaign_registry AS (
+  SELECT
+    'CMP-1234-A' AS campaign_id,
+    'social_media_campaign' AS campaign_name,
+    'FB_ads' AS utm_source,
+    'Accessories' AS target_category
+),
+
+-- Mapped to canonical sources
+cleaned_marketing_registry AS (
+  SELECT
+    campaign_id,
+    campaign_name,
+    target_category,
+    CASE
+      WHEN utm_source IN ('FB_ads', 'Facebook_Feed') THEN 'Facebook'
+      WHEN utm_source IN ('Google_SEM', 'Bing_Ads') THEN 'Search'
+      ELSE 'Other'
+    END AS canonical_traffic_source
+  FROM mock_campaign_registry
+),
+
+merged_marketing_campaign_source AS (
+  SELECT
+    msd.campaign_id,
+    msd.campaign_date,
+    cmr.campaign_name,
+    cmr.canonical_traffic_source,
+    cmr.target_category,
+    msd.spend_usd
+  FROM mock_marketing_spend_daily AS msd
+  INNER JOIN cleaned_marketing_registry AS cmr
+    ON msd.campaign_id = cmr.campaign_id
+),
+
+-- Align grain 
+aggregated_source AS (
+  SELECT
+    event_date,
+    traffic_source,
+    product_category,
+    SUM(sales_revenue) AS sales_revenue
+  FROM merged_core_source
+  GROUP BY 1, 2, 3
+)
+
+SELECT
+  src.event_date,
+  msc.canonical_traffic_source,
+  src.product_category,
+  SUM(src.sales_revenue) AS total_revenue,
+  SUM(msc.spend_usd) AS total_spend,
+  SAFE_DIVIDE(SUM(src.sales_revenue), SUM(msc.spend_usd)) AS return_ad_spend
+FROM merged_marketing_campaign_source AS msc
+INNER JOIN aggregated_source AS src
+  ON
+    msc.campaign_date = src.event_date
+    AND msc.canonical_traffic_source = src.traffic_source
+    AND msc.target_category = src.product_category
+WHERE
+  src.event_date = '2026-05-25'
+GROUP BY 1, 2, 3;
+
+---------------------------------------------------------------
+-- VALIDATE: INTEGRATION LOGIC (Dimension table)
+---------------------------------------------------------------
+
+WITH mock_logistics_source AS (
+  SELECT
+    prd.distribution_center_id,
+    dist.name,
+    ord.status,
+    DATE(ord.created_at) AS order_date,
+    DATE_DIFF(DATE(ord.shipped_at), DATE(ord.created_at), DAY) AS lead_time_days
+  FROM `automated-predictive-pipeline.core_ecom_dataset.order_items` AS ord
+  LEFT JOIN `automated-predictive-pipeline.core_ecom_dataset.products` AS prd
+    ON ord.product_id = prd.id
+  LEFT JOIN `automated-predictive-pipeline.core_ecom_dataset.distribution_centers` AS dist
+    ON prd.distribution_center_id = dist.id
+-- WHERE ord.status != 'Cancelled'
+),
+
+aggregated_source AS (
+  SELECT
+    order_date,
+    AVG(lead_time_days) AS avg_lead_time,
+    COUNT(CASE WHEN status = 'Cancelled' THEN 1 END) AS cancellation_count,
+    COUNT(*) AS total_orders
+  FROM mock_logistics_source
+  GROUP BY 1
+),
+
+mock_marketing_spend_daily AS (
+  SELECT
+    'CMP-1234-A' AS campaign_id,
+    1000 AS spend_usd,
+    DATE('2026-05-25') AS campaign_date
+)
+
+SELECT
+  ags.order_date,
+  ags.total_orders,
+  ags.avg_lead_time,
+  msd.spend_usd AS marketing_spend,
+  SAFE_DIVIDE(ags.total_orders, msd.spend_usd) AS conversion_efficiency
+FROM aggregated_source AS ags
+INNER JOIN mock_marketing_spend_daily AS msd
+  ON ags.order_date = msd.campaign_date;

@@ -1,0 +1,138 @@
+/* ============================================================
+    Project: automated-predictive-pipeline
+    File: core_dataset_selection.bqsql
+    Author: Bryan Melvida
+
+    Purpose:
+    - Extracts selected features from thelook_ecommerce to build core tables.
+    - Defines the primary schema for predictive modeling and analysis.
+   ============================================================ */
+
+
+---------------------------------------------------------------
+-- TABLE: ORDER_ITEMS
+---------------------------------------------------------------
+
+SELECT
+  column_name,
+  data_type,
+  is_nullable
+FROM `bigquery-public-data.thelook_ecommerce.INFORMATION_SCHEMA.COLUMNS`
+WHERE table_name = "order_items";
+
+
+CREATE OR REPLACE TABLE `automated-predictive-pipeline.core_ecom_dataset.order_items` AS
+SELECT
+  id,
+  order_id,
+  product_id,
+  sale_price,
+  status,
+  created_at,
+  shipped_at,
+  returned_at
+FROM `bigquery-public-data.thelook_ecommerce.order_items`;
+
+
+---------------------------------------------------------------
+-- TABLE: ORDERS
+---------------------------------------------------------------
+
+SELECT
+  column_name,
+  data_type,
+  is_nullable
+FROM `bigquery-public-data.thelook_ecommerce.INFORMATION_SCHEMA.COLUMNS`
+WHERE table_name = "orders";
+
+
+CREATE OR REPLACE TABLE `automated-predictive-pipeline.core_ecom_dataset.orders` AS
+SELECT
+  order_id,
+  user_id,
+  status,
+  created_at,
+  num_of_item
+FROM `bigquery-public-data.thelook_ecommerce.orders`;
+
+
+---------------------------------------------------------------
+-- TABLE: PRODUCTS
+---------------------------------------------------------------
+
+SELECT
+  column_name,
+  data_type,
+  is_nullable
+FROM `bigquery-public-data.thelook_ecommerce.INFORMATION_SCHEMA.COLUMNS`
+WHERE table_name = "products";
+
+
+CREATE OR REPLACE TABLE `automated-predictive-pipeline.core_ecom_dataset.products` AS
+SELECT
+  id,
+  category,
+  name,
+  cost,
+  distribution_center_id
+FROM `bigquery-public-data.thelook_ecommerce.products`;
+
+---------------------------------------------------------------
+-- TABLE: DISTRIBUTION CENTER
+---------------------------------------------------------------
+
+SELECT
+  column_name,
+  data_type,
+  is_nullable
+FROM `bigquery-public-data.thelook_ecommerce.INFORMATION_SCHEMA.COLUMNS`
+WHERE table_name = "distribution_centers";
+
+
+CREATE OR REPLACE TABLE `automated-predictive-pipeline.core_ecom_dataset.distribution_centers` AS
+SELECT
+  id,
+  name
+FROM `bigquery-public-data.thelook_ecommerce.distribution_centers`;
+
+---------------------------------------------------------------
+-- TABLE: USERS
+---------------------------------------------------------------
+
+SELECT
+  column_name,
+  data_type,
+  is_nullable
+FROM `bigquery-public-data.thelook_ecommerce.INFORMATION_SCHEMA.COLUMNS`
+WHERE table_name = "users";
+
+CREATE OR REPLACE TABLE `automated-predictive-pipeline.core_ecom_dataset.users` AS
+SELECT
+  id,
+  traffic_source,
+  country,
+  state,
+  age,
+  gender
+FROM `bigquery-public-data.thelook_ecommerce.users`;
+
+
+---------------------------------------------------------------
+-- TABLE: EVENTS
+---------------------------------------------------------------
+
+SELECT
+  column_name,
+  data_type,
+  is_nullable
+FROM `bigquery-public-data.thelook_ecommerce.INFORMATION_SCHEMA.COLUMNS`
+WHERE table_name = "events";
+
+
+CREATE OR REPLACE TABLE `automated-predictive-pipeline.core_ecom_dataset.events` AS
+SELECT
+  session_id,
+  event_type,
+  browser,
+  traffic_source
+FROM `bigquery-public-data.thelook_ecommerce.events`;
