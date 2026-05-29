@@ -1,0 +1,2 @@
+*.bqsql   linguist-language=SQL linguist-detectable
+*.sqlx    linguist-language=SQL linguist-detectable
