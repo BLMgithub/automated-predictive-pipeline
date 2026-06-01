@@ -8,13 +8,10 @@
         - bad dates
         - negative spend
         - fuzzy source mapping
+
       - Validates grain-aligned joins of:
         - marketing spend with ecommerce sales tables
         - marketing spend with logistics dimension tables
-
-    Structure:
-    1. UNIT TESTS: Pure Mock logic to test Chaos Handling.
-    2. INTEGRATION TEST: Mock Marketing + Real Source Tables.
    ============================================================ */
 
 ---------------------------------------------------------------

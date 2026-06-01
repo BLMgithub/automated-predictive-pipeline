@@ -1,9 +1,3 @@
-/*
-Extensions: 
-- Black formatter by microsoft
-- Sqlfluff formatter/linter by SqlFluff
-- SQL (BigQuery) Language support by Shinichi Takii -- for sqlfluff compatibility 
-*/
 {
     "sqlfluff.config": "${workspaceFolder}/.sqlfluff",
     "sqlfluff.format.enabled": true,
