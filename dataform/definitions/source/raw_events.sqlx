@@ -1,0 +1,6 @@
+config {
+  type: "declaration",
+  database: "automated-predictive-pipeline",
+  schema: "core_ecom_dataset",
+  name: "events"
+}
