@@ -5,5 +5,5 @@ config {
 }
 
 SELECT *
-FROM ${ref("dim_pipeline_health")}
+FROM ${ref("pipeline_health")}
 WHERE data_loss_percentage > 0.10

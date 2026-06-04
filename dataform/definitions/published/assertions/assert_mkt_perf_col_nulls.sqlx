@@ -1,0 +1,14 @@
+config {
+  type: "assertion",
+  database: "automated-predictive-pipeline",
+  schema: "published_dataset"
+}
+
+SELECT *
+FROM ${ref("marketing_performance")}
+WHERE event_date IS NULL
+  OR  canonical_traffic_source IS NULL
+  OR  product_category IS NULL
+  OR  total_orders IS NULL
+  OR  total_revenue IS NULL
+  OR  total_spend IS NULL

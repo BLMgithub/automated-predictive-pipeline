@@ -2,7 +2,7 @@ config {
   type: "table",
   database: "automated-predictive-pipeline",
   schema: "published_dataset",
-  name: "dim_pipeline_health"
+  name: "pipeline_health"
 }
 
 SELECT
