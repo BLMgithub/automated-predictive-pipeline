@@ -2,7 +2,10 @@ config {
   type: "table",
   database: "automated-predictive-pipeline",
   schema: "published_dataset",
-  name: "pipeline_health"
+  name: "pipeline_health",
+  assertions: {
+    rowConditions: ["data_loss_percentage <= 0.10"]
+  }
 }
 
 SELECT

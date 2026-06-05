@@ -2,7 +2,10 @@ config {
   type: "table",
   database: "automated-predictive-pipeline",
   schema: "published_dataset",
-  name: "marketing_performance"
+  name: "marketing_performance",
+  assertions: {
+    nonNull: ["event_date", "canonical_traffic_source", "product_category", "total_orders", "total_revenue", "total_spend"]
+  }
 }
 
 WITH merge_core_source AS (
@@ -12,14 +15,14 @@ WITH merge_core_source AS (
     itm.sale_price,
     ord.order_id,
     ord.user_id,
-    DATE(ord.created_at) AS event_date
-  FROM ${ref("users")} AS usr
-  LEFT JOIN ${ref("orders")} AS ord
-    ON usr.id = ord.user_id
-  LEFT JOIN ${ref("order_items")} AS itm
-    ON ord.order_id = itm.order_id
+    DATE(itm.created_at) AS event_date
+  FROM ${ref("order_items")} AS itm
+  INNER JOIN ${ref("orders")} AS ord
+    ON itm.order_id = ord.order_id
   LEFT JOIN ${ref("products")} AS prd
     ON itm.product_id = prd.id
+  LEFT JOIN ${ref("users")} AS usr
+    ON ord.user_id = usr.id
 ),
 
 core_agg AS (
@@ -51,10 +54,9 @@ SELECT
   src.total_orders,
   src.total_revenue,
   mkt.total_spend,
-  SAFE_DIVIDE(src.total_revenue, mkt.total_spend) AS return_ad_spend
+  COALESCE(SAFE_DIVIDE(src.total_revenue, mkt.total_spend), 0) AS return_ad_spend
 FROM core_agg AS src
 INNER JOIN market_agg AS mkt
-  ON
-    src.event_date = mkt.campaign_date
+  ON src.event_date = mkt.campaign_date
     AND src.traffic_source = mkt.canonical_traffic_source
     AND src.product_category = mkt.target_category

@@ -2,7 +2,10 @@ config {
   type: "table",
   database: "automated-predictive-pipeline",
   schema: "published_dataset",
-  name: "logistic_impact"
+  name: "logistic_impact",
+  assertions: {
+    nonNull: ["order_date", "dc_name", "product_category"]
+  }
 }
 
 WITH logistic_source AS (

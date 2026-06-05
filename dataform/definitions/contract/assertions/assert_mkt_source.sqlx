@@ -1,9 +1,0 @@
-config {
-  type: "assertion",
-  database: "automated-predictive-pipeline",
-  schema: "contracted_dataset"
-}
-
-SELECT *
-FROM ${ref("marketing_data")}
-WHERE canonical_traffic_source NOT IN ("Search", "Facebook", "Email", "Display", "Organic")

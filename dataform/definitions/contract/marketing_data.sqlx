@@ -2,7 +2,11 @@ config {
   type: "table",
   database: "automated-predictive-pipeline",
   schema: "contracted_dataset",
-  name: "marketing_data"
+  name: "marketing_data",
+  assertions: {
+    nonNull: ["campaign_id", "campaign_date", "campaign_name", "canonical_traffic_source", "target_category", "spend_usd"],
+    rowConditions: ["canonical_traffic_source IN ('Search', 'Facebook', 'Email', 'Display', 'Organic')"]
+  }
 }
 
 WITH clean_campaign_registry AS (

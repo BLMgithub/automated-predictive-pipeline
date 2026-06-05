@@ -1,9 +1,0 @@
-config {
-  type: "assertion",
-  database: "automated-predictive-pipeline",
-  schema: "published_dataset"
-}
-
-SELECT *
-FROM ${ref("pipeline_health")}
-WHERE data_loss_percentage > 0.10
