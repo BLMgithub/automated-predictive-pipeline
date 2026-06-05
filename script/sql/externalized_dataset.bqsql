@@ -45,3 +45,21 @@ OPTIONS (
   skip_leading_rows = 1,
   uris = ["gs://marketing-archival-dev/data/marketing_*"]
 );
+
+---------------------------------------------------------------
+-- HOLIDAY CALENDAR EXTERNAL TABLE
+---------------------------------------------------------------
+
+CREATE OR REPLACE EXTERNAL TABLE `automated-predictive-pipeline.marketing_dataset.ext_holiday_calendar` (
+  `date` DATE,
+  is_holiday_season BOOL,
+  is_peak_date BOOL,
+)
+OPTIONS (
+  description = "US holiday calendar and recorded peak season",
+  encoding = "UTF8",
+  field_delimiter = ",",
+  format = "CSV",
+  skip_leading_rows = 1,
+  uris = ["gs://marketing-archival-dev/data/holiday_calendar.csv"]
+)
