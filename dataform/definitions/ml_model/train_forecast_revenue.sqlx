@@ -1,0 +1,16 @@
+config {
+  type: "operations",
+  database: "automated-predictive-pipeline",
+  schema: "published_dataset",
+  name: "revenue_forecast_model",
+  hasOutput: false
+}
+
+CREATE OR REPLACE MODEL `${database()}`.${schema()}.`revenue_forecast`
+OPTIONS(
+  model_type = 'LINEAR_REG',
+  input_label_cols = ['next_week_revenue_per_campaign'],
+  data_split_method = 'AUTO_SPLIT'
+) AS
+SELECT * EXCEPT(week_start)
+FROM `automated-predictive-pipeline.published_dataset.ml_training_data`
