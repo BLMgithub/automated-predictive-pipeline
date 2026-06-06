@@ -1,0 +1,40 @@
+config {
+  type: "view",
+  database:"automated-predictive-pipeline",
+  schema: "published_dataset",
+  name: "ml_training_data",
+  assertions: {
+    nonNull: ["traffic_source", "product_category", "next_week_revenue_per_campaign"]       
+  }
+}
+
+WITH train_features AS (
+  SELECT
+    week_start,
+    traffic_source,
+    product_category,
+    total_campaign,
+    total_orders,
+    total_returned,
+    is_peak_date,
+    is_holiday_season,
+    SAFE_DIVIDE(
+      total_spend, NULLIF(LAG(total_spend, 1) 
+      OVER (PARTITION BY traffic_source, product_category ORDER BY week_start), 0)
+    ) AS spend_momentum,    
+    LAG(SAFE_DIVIDE(total_returned, NULLIF(total_orders, 0)), 1)
+      OVER (PARTITION BY traffic_source, product_category ORDER BY week_start)
+      AS return_rate_prev_wk,
+    LAG(total_orders, 1)
+      OVER (PARTITION BY traffic_source, product_category ORDER BY week_start)
+      AS total_orders_prev_wk,
+    LEAD(revenue_per_campaign, 1)
+      OVER (PARTITION BY traffic_source, product_category ORDER BY week_start)
+      AS next_week_revenue_per_campaign
+  FROM ${ref("ml_core_dataset")}
+  WHERE week_start < '2026-01-01'
+)
+
+SELECT *
+FROM train_features
+WHERE next_week_revenue_per_campaign IS NOT NULL

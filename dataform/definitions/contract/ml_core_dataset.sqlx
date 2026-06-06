@@ -41,12 +41,14 @@ SELECT
     DATE_TRUNC(src.event_date, WEEK(MONDAY)) AS week_start,
     mkt.canonical_traffic_source AS traffic_source,
     src.product_category,
+    SAFE_DIVIDE(SUM(src.total_revenue), SUM(mkt.total_campaign)) AS revenue_per_campaign,
     SUM(mkt.total_campaign) AS total_campaign,
     SUM(src.total_revenue) AS total_revenue,
     SUM(mkt.total_spend) AS total_spend,
     SUM(src.total_orders) AS total_orders,
     SUM(src.total_returned) AS total_returned,
     SUM(src.avg_fulfillment_days * src.total_orders) / NULLIF(SUM(src.total_orders), 0) avg_fulfillment_days,
+    LOGICAL_OR(cal.is_peak_date) AS is_peak_date,
     LOGICAL_OR(cal.is_holiday_season) AS is_holiday_season
     FROM core_agg AS src
     INNER JOIN market_agg AS mkt
