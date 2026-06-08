@@ -1,0 +1,46 @@
+config {
+  type: "table",
+  database: "automated-predictive-pipeline",
+  schema: "contracted_dataset",
+  name: "marketing_data",
+  description: "Cleaned marketing spend joined with canonical campaign metadata at daily grain",
+  assertions: {
+    nonNull: ["campaign_id", "campaign_date", "campaign_name", "canonical_traffic_source", "target_category", "spend_usd"],
+    rowConditions: ["canonical_traffic_source IN ('Search', 'Facebook', 'Email', 'Display', 'Organic')"]
+  },
+  tags: ["layer:dashboard"]
+}
+
+WITH clean_campaign_registry AS (
+  SELECT
+    campaign_id,
+    campaign_name,
+    target_category,
+    ${registry.map_source("utm_source")} AS canonical_traffic_source
+    
+  FROM ${ref("ext_campaign_registry")}
+  ${registry.deduplicate("campaign_id", "target_category")}
+),
+
+clean_marketing_spend_daily AS (
+  SELECT
+    campaign_id,
+    ${registry.normalize_date("date")} AS campaign_date,
+    spend_usd,
+    clicks
+  FROM ${ref("ext_marketing_spend_daily")}
+)
+
+SELECT
+  msd.campaign_id,
+  msd.campaign_date,
+  cmr.campaign_name,
+  cmr.canonical_traffic_source,
+  cmr.target_category,
+  msd.spend_usd
+FROM clean_marketing_spend_daily AS msd
+INNER JOIN clean_campaign_registry AS cmr
+  ON msd.campaign_id = cmr.campaign_id
+WHERE msd.spend_usd >= 0
+  AND msd.campaign_date IS NOT NULL
+  AND cmr.canonical_traffic_source IS NOT NULL

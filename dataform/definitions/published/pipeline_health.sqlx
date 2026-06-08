@@ -1,0 +1,42 @@
+config {
+  type: "table",
+  database: "automated-predictive-pipeline",
+  schema: "published_dataset",
+  name: "pipeline_health",
+  description: "Marketing pipeline data-quality monitor tracking row loss, rejections, and unmapped sources",
+  assertions: {
+    rowConditions: ["data_loss_percentage <= 0.10"]
+  },
+  tags: ["layer:dashboard"]
+}
+
+SELECT
+  'marketing_csv_ingestion' AS pipeline_name,
+  CURRENT_TIMESTAMP() AS snapshot_timestamp,
+
+  (SELECT COUNT(*) FROM ${ref("ext_marketing_spend_daily")})
+    AS raw_source_count,
+
+  (SELECT COUNT(*) FROM ${ref("marketing_data")})
+    AS contract_output_count,
+
+  SAFE_DIVIDE(
+    (SELECT COUNT(*) FROM ${ref("ext_marketing_spend_daily")}) -
+    (SELECT COUNT(*) FROM ${ref("marketing_data")}),
+    (SELECT COUNT(*) FROM ${ref("ext_marketing_spend_daily")})
+  ) AS data_loss_percentage,
+
+  (SELECT COUNTIF(spend_usd < 0) FROM ${ref("ext_marketing_spend_daily")})
+    AS rejected_negative_spend,
+
+  (SELECT COUNTIF(
+     ${registry.normalize_date("date")} IS NULL
+   ) FROM ${ref("ext_marketing_spend_daily")})
+    AS rejected_unparseable_dates,
+
+  (SELECT COUNT(*)
+   FROM ${ref("ext_marketing_spend_daily")} AS msd
+   INNER JOIN ${ref("ext_campaign_registry")} AS cr
+     ON msd.campaign_id = cr.campaign_id
+   WHERE NOT ${registry.is_known_source("cr.utm_source")}
+  ) AS rejected_unmapped_source

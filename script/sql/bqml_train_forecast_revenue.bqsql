@@ -1,0 +1,51 @@
+/* ============================================================
+    Project: automated-predictive-pipeline
+    File: bqml_train_forecast_revenue.bqsql
+    Author: Bryan Melvida
+
+    Purpose:
+    -   Train a BQML linear regression model on ML features
+        to forecast next-week revenue per campaign.
+   ============================================================ */
+
+
+/* ============================================================
+    MODEL TRAINING (LINEAR REGRESSION)
+   ============================================================ */
+
+CREATE OR REPLACE MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast` -- noqa
+OPTIONS (
+  model_type = 'LINEAR_REG',
+  input_label_cols = ['next_week_revenue_per_campaign'],
+  data_split_method = 'AUTO_SPLIT'
+  -- l2_reg = HPARAM_RANGE(0, 1),
+  -- num_trials = 5,
+  -- hparam_tuning_objectives = ['R2_SCORE']
+) AS
+SELECT * EXCEPT(week_start) -- noqa
+FROM `automated-predictive-pipeline.published_dataset.ml_training_data`;
+
+---------------------------------------------------------------
+-- MODEL EVALUATION
+---------------------------------------------------------------
+
+SELECT * -- noqa
+FROM ML.evaluate (MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast`); -- noqa
+
+---------------------------------------------------------------
+-- FEATURE WEIGHT IMPORTANCE
+---------------------------------------------------------------
+
+SELECT *  -- noqa
+FROM ML.WEIGHTS(MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast`) -- noqa
+ORDER BY ABS(weight) DESC;
+
+---------------------------------------------------------------
+-- PREDICT ON HOLDOUT
+---------------------------------------------------------------
+
+SELECT *
+FROM ML.predict (
+  MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast`, --noqa
+  (SELECT * FROM `automated-predictive-pipeline.published_dataset.ml_holdout_data`) --noqa
+);

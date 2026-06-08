@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "ms-python.black-formatter",
+        "sqlfluff.vscode-sqlfluff",
+        "shinichi-takii.sql-bigquery",
+        "bstruct.vscode-bigquery",
+        "ashishalex.dataform-lsp-vscode",
+    ]
+}

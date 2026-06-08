@@ -8,7 +8,9 @@ google-auth-httplib2
 google-auth-oauthlib
 
 # data processing
-polars
+polars==1.40.1
+pandas==3.0.3
 
 # dev test
-sqlfluff
+sqlfluff==4.2.1
+black==26.5.1

@@ -1,0 +1,64 @@
+config {
+  type: "table",
+  database: "automated-predictive-pipeline",
+  schema: "published_dataset",
+  name: "marketing_performance",
+  description: "Daily marketing ROI by traffic source and product category with Return on Ad Spend",
+  assertions: {
+    nonNull: ["event_date", "canonical_traffic_source", "product_category", "total_orders", "total_revenue", "total_spend"]
+  },
+  tags: ["layer:dashboard"]
+}
+
+WITH merge_core_source AS (
+  SELECT
+    usr.traffic_source,
+    prd.category AS product_category,
+    itm.sale_price,
+    ord.order_id,
+    ord.user_id,
+    DATE(itm.created_at) AS event_date
+  FROM ${ref("order_items")} AS itm
+  INNER JOIN ${ref("orders")} AS ord
+    ON itm.order_id = ord.order_id
+  LEFT JOIN ${ref("products")} AS prd
+    ON itm.product_id = prd.id
+  LEFT JOIN ${ref("users")} AS usr
+    ON ord.user_id = usr.id
+),
+
+core_agg AS (
+  SELECT
+    event_date,
+    traffic_source,
+    product_category,
+    COUNT(DISTINCT order_id) AS total_orders,
+    SUM(sale_price) AS total_revenue
+  FROM merge_core_source
+  WHERE event_date IS NOT NULL
+  GROUP BY 1, 2, 3
+),
+
+market_agg AS (
+  SELECT
+    campaign_date,
+    canonical_traffic_source,
+    target_category,
+    SUM(spend_usd) AS total_spend
+  FROM ${ref("marketing_data")}
+  GROUP BY 1, 2, 3
+)
+
+SELECT
+  src.event_date,
+  mkt.canonical_traffic_source,
+  src.product_category,
+  src.total_orders,
+  src.total_revenue,
+  mkt.total_spend,
+  COALESCE(SAFE_DIVIDE(src.total_revenue, mkt.total_spend), 0) AS return_ad_spend
+FROM core_agg AS src
+INNER JOIN market_agg AS mkt
+  ON src.event_date = mkt.campaign_date
+    AND src.traffic_source = mkt.canonical_traffic_source
+    AND src.product_category = mkt.target_category

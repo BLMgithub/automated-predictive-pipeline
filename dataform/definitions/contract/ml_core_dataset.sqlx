@@ -1,0 +1,62 @@
+config {
+  type: "table",
+  schema: "contracted_dataset",
+  name: "ml_core_dataset",
+  description: "Weekly feature-engineered dataset joining e-commerce, marketing, and holiday dimensions",
+  assertions: {
+    nonNull: ["week_start", "traffic_source", "product_category", "total_revenue", "total_spend"]
+    },
+  tags: ["layer:ml"]
+}
+
+WITH market_agg AS (
+  SELECT
+    campaign_date,
+    canonical_traffic_source,
+    target_category,
+    COUNT(DISTINCT campaign_id) AS total_campaign,
+    SUM(spend_usd) AS total_spend
+  FROM ${ref("marketing_data")}
+  GROUP BY 1, 2, 3
+),
+
+core_agg AS (
+  SELECT
+    DATE(itm.created_at) AS event_date,
+    prd.category AS product_category,
+    usr.traffic_source,
+    SUM(itm.sale_price) AS total_revenue,
+    COUNT(DISTINCT ord.order_id) total_orders,
+    COUNT(CASE WHEN LOWER(itm.status) = "returned" THEN 1 END) AS total_returned,
+    AVG(DATE_DIFF(DATE(itm.shipped_at), DATE(itm.created_at), DAY)) AS avg_fulfillment_days
+  FROM ${ref("order_items")} AS itm
+  INNER JOIN ${ref("orders")} AS ord
+    ON itm.order_id = ord.order_id
+  LEFT JOIN ${ref("products")} AS prd
+    ON itm.product_id = prd.id
+  LEFT JOIN ${ref("users")} AS usr
+    ON ord.user_id = usr.id
+  GROUP BY 1, 2, 3
+)
+
+SELECT
+    DATE_TRUNC(src.event_date, WEEK(MONDAY)) AS week_start,
+    mkt.canonical_traffic_source AS traffic_source,
+    src.product_category,
+    SAFE_DIVIDE(SUM(src.total_revenue), SUM(mkt.total_campaign)) AS revenue_per_campaign,
+    SUM(mkt.total_campaign) AS total_campaign,
+    SUM(src.total_revenue) AS total_revenue,
+    SUM(mkt.total_spend) AS total_spend,
+    SUM(src.total_orders) AS total_orders,
+    SUM(src.total_returned) AS total_returned,
+    SUM(src.avg_fulfillment_days * src.total_orders) / NULLIF(SUM(src.total_orders), 0) avg_fulfillment_days,
+    LOGICAL_OR(cal.is_peak_date) AS is_peak_date,
+    LOGICAL_OR(cal.is_holiday_season) AS is_holiday_season
+    FROM core_agg AS src
+    INNER JOIN market_agg AS mkt
+    ON src.event_date = mkt.campaign_date
+        AND src.traffic_source = mkt.canonical_traffic_source
+        AND src.product_category = mkt.target_category
+    LEFT JOIN ${ref("ext_holiday_calendar")} AS cal
+    ON src.event_date = cal.date
+GROUP BY 1, 2, 3

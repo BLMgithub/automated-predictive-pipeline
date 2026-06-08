@@ -1,0 +1,33 @@
+config {
+  type: "view",
+  database:"automated-predictive-pipeline",
+  schema: "published_dataset",
+  name: "ml_holdout_data",
+  description: "Feature-only holdout view (2026+) for forecasting prediction",
+  assertions: {
+    nonNull: ["week_start","traffic_source", "product_category"]       
+  },
+  tags: ["layer:ml"]
+}
+
+SELECT
+  week_start,
+  traffic_source,
+  product_category,
+  total_campaign,
+  total_orders,
+  total_returned,
+  is_peak_date,
+  is_holiday_season,
+  SAFE_DIVIDE(
+    total_spend, NULLIF(LAG(total_spend, 1) 
+    OVER (PARTITION BY traffic_source, product_category ORDER BY week_start), 0)
+  ) AS spend_momentum,    
+  LAG(SAFE_DIVIDE(total_returned, NULLIF(total_orders, 0)), 1)
+    OVER (PARTITION BY traffic_source, product_category ORDER BY week_start)
+    AS return_rate_prev_wk,
+  LAG(total_orders, 1)
+    OVER (PARTITION BY traffic_source, product_category ORDER BY week_start)
+    AS total_orders_prev_wk,
+FROM ${ref("ml_core_dataset")}
+WHERE week_start >= '2026-01-01'

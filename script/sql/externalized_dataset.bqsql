@@ -1,0 +1,65 @@
+/* ============================================================
+    Project: automated-predictive-pipeline
+    File: externalized_dataset.bqsql
+    Author: Bryan Melvida
+
+    Purpose:
+    - Externalizes secondary data sources for cross-pipeline references.
+    - Defines external table configurations consumed by Dataform.
+   ============================================================ */
+
+---------------------------------------------------------------
+-- CAMPAIGN REGISTRY EXTERNAL TABLE
+---------------------------------------------------------------
+
+CREATE OR REPLACE EXTERNAL TABLE `automated-predictive-pipeline.marketing_dataset.ext_campaign_registry` (
+  campaign_id STRING,
+  campaign_name STRING,
+  utm_source STRING,
+  target_category STRING,
+)
+OPTIONS (
+  description = "campaign registry external table",
+  encoding = "UTF8",
+  field_delimiter = ",",
+  format = "CSV",
+  skip_leading_rows = 1,
+  uris = ["gs://marketing-archival-dev/data/campaign_*"]
+);
+
+---------------------------------------------------------------
+-- MARKETING SPEND DAILY EXTERNAL TABLE
+---------------------------------------------------------------
+
+CREATE OR REPLACE EXTERNAL TABLE `automated-predictive-pipeline.marketing_dataset.ext_marketing_spend_daily` (
+  campaign_id STRING,
+  `date` STRING,
+  spend_usd FLOAT64,
+  clicks INT64,
+)
+OPTIONS (
+  description = "marketing spend daily external table",
+  encoding = "UTF8",
+  field_delimiter = ",",
+  format = "CSV",
+  skip_leading_rows = 1,
+  uris = ["gs://marketing-archival-dev/data/marketing_*"]
+);
+
+---------------------------------------------------------------
+-- HOLIDAY CALENDAR EXTERNAL TABLE
+---------------------------------------------------------------
+
+CREATE OR REPLACE EXTERNAL TABLE `automated-predictive-pipeline.marketing_dataset.ext_holiday_calendar` (
+  `date` DATE,
+  is_holiday_season BOOL,
+  is_peak_date BOOL,
+)
+OPTIONS (
+  description = "US holiday calendar and recorded peak season",
+  encoding = "UTF8",
+  field_delimiter = ",",
+  format = "CSV",
+  skip_leading_rows = 1,
+  uris = ["gs://marketing-archival-dev/data/holiday_calendar.csv"]
+)

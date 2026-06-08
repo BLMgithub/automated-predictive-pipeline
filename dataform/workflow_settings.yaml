@@ -1,0 +1,4 @@
+defaultProject: automated-predictive-pipeline
+defaultLocation: US
+defaultDataset: dataform
+defaultAssertionDataset: dataform_assertions
