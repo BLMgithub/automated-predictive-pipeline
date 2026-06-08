@@ -3,9 +3,11 @@ config {
   database: "automated-predictive-pipeline",
   schema: "published_dataset",
   name: "logistic_impact",
+  description: "Distribution center fulfillment speed, cancellations, and returns by product category",
   assertions: {
     nonNull: ["order_date", "dc_name", "product_category"]
-  }
+  },
+  tags: ["layer:dashboard"]
 }
 
 WITH logistic_source AS (

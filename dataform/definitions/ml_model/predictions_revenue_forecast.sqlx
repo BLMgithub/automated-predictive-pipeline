@@ -3,10 +3,12 @@ config {
   database: "automated-predictive-pipeline",
   schema: "published_dataset",
   name: "predictions_revenue_forecast",
+  description: "Model predictions on holdout set joined with actuals for comparison",
   dependencies: ["revenue_forecast_model"],
   assertions: {
     nonNull: ["week_start", "traffic_source", "product_category", "predicted_next_week_revenue_per_campaign"]
-  }
+  },
+  tags: ["layer:ml"]
 }
 
 SELECT

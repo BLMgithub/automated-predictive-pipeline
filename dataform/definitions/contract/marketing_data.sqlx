@@ -3,10 +3,12 @@ config {
   database: "automated-predictive-pipeline",
   schema: "contracted_dataset",
   name: "marketing_data",
+  description: "Cleaned marketing spend joined with canonical campaign metadata at daily grain",
   assertions: {
     nonNull: ["campaign_id", "campaign_date", "campaign_name", "canonical_traffic_source", "target_category", "spend_usd"],
     rowConditions: ["canonical_traffic_source IN ('Search', 'Facebook', 'Email', 'Display', 'Organic')"]
-  }
+  },
+  tags: ["layer:dashboard"]
 }
 
 WITH clean_campaign_registry AS (

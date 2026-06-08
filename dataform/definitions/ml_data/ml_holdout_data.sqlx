@@ -3,9 +3,11 @@ config {
   database:"automated-predictive-pipeline",
   schema: "published_dataset",
   name: "ml_holdout_data",
+  description: "Feature-only holdout view (2026+) for forecasting prediction",
   assertions: {
     nonNull: ["week_start","traffic_source", "product_category"]       
-  }
+  },
+  tags: ["layer:ml"]
 }
 
 SELECT

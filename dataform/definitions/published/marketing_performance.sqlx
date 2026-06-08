@@ -3,9 +3,11 @@ config {
   database: "automated-predictive-pipeline",
   schema: "published_dataset",
   name: "marketing_performance",
+  description: "Daily marketing ROI by traffic source and product category with Return on Ad Spend",
   assertions: {
     nonNull: ["event_date", "canonical_traffic_source", "product_category", "total_orders", "total_revenue", "total_spend"]
-  }
+  },
+  tags: ["layer:dashboard"]
 }
 
 WITH merge_core_source AS (

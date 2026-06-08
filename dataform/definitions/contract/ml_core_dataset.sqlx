@@ -2,9 +2,11 @@ config {
   type: "table",
   schema: "contracted_dataset",
   name: "ml_core_dataset",
+  description: "Weekly feature-engineered dataset joining e-commerce, marketing, and holiday dimensions",
   assertions: {
     nonNull: ["week_start", "traffic_source", "product_category", "total_revenue", "total_spend"]
-    }
+    },
+  tags: ["layer:ml"]
 }
 
 WITH market_agg AS (

@@ -3,9 +3,11 @@ config {
   database: "automated-predictive-pipeline",
   schema: "published_dataset",
   name: "pipeline_health",
+  description: "Marketing pipeline data-quality monitor tracking row loss, rejections, and unmapped sources",
   assertions: {
     rowConditions: ["data_loss_percentage <= 0.10"]
-  }
+  },
+  tags: ["layer:dashboard"]
 }
 
 SELECT
