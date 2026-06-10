@@ -12,6 +12,8 @@ fake = Faker()
 Faker.seed(42)
 np.random.seed(42)
 
+from datetime import datetime as dt
+from zoneinfo import ZoneInfo
 
 # ------------------------------------------------------------
 # CHAOS CONSTANTS AND PARAMETERS
@@ -188,6 +190,13 @@ def generate_daily_spend(registry_df):
     return df
 
 
+def date_suffix(file_name: str, file_ext: str) -> str:
+
+    pht_now = dt.now(ZoneInfo("Asia/Manila"))
+    today = pht_now.strftime("%Y_%m_%d")
+    return f"{file_name}_{today}.{file_ext}"
+
+
 # ------------------------------------------------------------
 # EXECUTOR
 # ------------------------------------------------------------
@@ -198,8 +207,8 @@ def main():
     registry = generate_registry()
     spend = generate_daily_spend(registry)
 
-    registry.to_csv(OUTPUT_DIR / "campaign_registry.csv", index=False)
-    spend.to_csv(OUTPUT_DIR / "marketing_spend_daily.csv", index=False)
+    registry.to_csv(OUTPUT_DIR / date_suffix("campagin_registry", "csv"), index=False)
+    spend.to_csv(OUTPUT_DIR / date_suffix("marketing_spend_daily", "csv"), index=False)
 
     print(f"Saving synthetic data in {OUTPUT_DIR}\n")
     print(f"Campaign Registry: {len(registry)} rows")
