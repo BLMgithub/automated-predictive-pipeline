@@ -59,10 +59,10 @@ def valid_handshake(service: GoogleDriveService, folder_id: str) -> bool:
         Text content decoded from bytes for string matching.
 
     Returns:
-        bool: True if the instruction file exists and contains `file-upload-safe`. False otherwise.
+        bool: True if the instruction file exists and contains `file-upload=safe`. False otherwise.
     """
 
-    query = f"'{folder_id}' in parents and name = 'instrcution'"
+    query = f"'{folder_id}' in parents and name = 'instruction.txt'"
     results = service.files().list(q=query, fields="files(id, name)").execute()
     files = results.get("files", [])
 
@@ -71,7 +71,7 @@ def valid_handshake(service: GoogleDriveService, folder_id: str) -> bool:
 
     content = extract_file(service, files[0]["id"], "text/plain").decode("utf-8")
 
-    return "file-upload-safe" in content
+    return "file-upload=safe" in content
 
 
 # ------------------------------------------------------------
@@ -131,25 +131,6 @@ def upload_to_gcs(
     blob = bucket.blob(destination_name)
 
     blob.upload_from_string(data, content_type=content_type)
-
-
-def plant_success_flag(bucket_name: str, folder_path: str) -> None:
-    """
-    Upload an empty _SUCCESS.txt marker file.
-
-    Args:
-        bucket_name: Target GCS bucket.
-        folder_path: Full path for the success marker.
-    """
-
-    bucket_name = bucket_name.replace("gs://", "")
-
-    client = storage.Client()
-    bucket = client.bucket(bucket_name)
-    blob = bucket.blob(folder_path)
-
-    # Upload an empty string just to create the file
-    blob.upload_from_string("")
 
 
 def date_suffix(file_name: str) -> str:
