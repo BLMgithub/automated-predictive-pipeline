@@ -22,7 +22,29 @@ from data_extractor.shared.extract_logic import (
 
 def orchestrate_extract(target_folder: str) -> int:
     """
-    docstring...
+    Orchestrate Google Drive extraction: initialize Drive, resolve folder, process files, persist metadata to GCS.
+
+    Workflow:
+        1. Initialize: Call Drive API service; build execution metadata with UUID4.
+        2. Gate: Check GCS for existing success marker at `status/{target_folder}.success`. Return 0 if present.
+        3. Resolve: Resolve Drive folder ID from name. Return 1 if not found.
+        4. Validate: Retrieve valid files from Drive folder. Return 1 if empty.
+        5. Delegate: Call process_extraction per file. First failure returns 1.
+        6. Persist: Upload execution metadata to `logs/{target_folder}_metatdata.json` in MARKET_BUCKET.
+
+    Operational Guarantees:
+    - Deduplication: execution skipped when GCS success marker exists.
+    - Fail-fast: first per-file failure aborts the run.
+    - Execution lineage: each invocation generates a UUID4 execution_id recorded in metadata.
+
+    Side Effects:
+    - Writes run metadata JSON to GCS at the configured path.
+    - Records per-file processing results (success details or error payloads) in metadata.
+
+    Failures:
+    - Target Drive folder resolution fails: return 1 with no GCS write.
+    - No valid files found: return 1 with no GCS write.
+    - Per-file extraction failure: uploads partial metadata with error details; returns 1.
     """
 
     service = initialize_gdrive()

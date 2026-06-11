@@ -7,13 +7,12 @@ import numpy as np
 from faker import Faker
 from datetime import datetime, timedelta
 from pathlib import Path
+from datetime import datetime as dt
+from zoneinfo import ZoneInfo
 
 fake = Faker()
 Faker.seed(42)
 np.random.seed(42)
-
-from datetime import datetime as dt
-from zoneinfo import ZoneInfo
 
 # ------------------------------------------------------------
 # CHAOS CONSTANTS AND PARAMETERS
