@@ -33,10 +33,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 25
+          cache: 'npm'
 
       - name: Install Dataform CLI
-        run: npm install -g @dataform/cli
+        run: npm install -g @dataform/cli@3.0.56
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
