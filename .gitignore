@@ -1,5 +1,7 @@
 # personal configs
 project.code-workspace
+.df-credentials.json
+node_modules/
 
 # temporary directories
 troubleshoots/

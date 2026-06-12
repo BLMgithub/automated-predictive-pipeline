@@ -176,6 +176,10 @@ def test_process_extraction_fails_on_upload_error(monkeypatch):
 
 def test_skip_when_marking_exists(monkeypatch):
     monkeypatch.setattr(
+        "data_extractor.run_extract.initialize_gdrive",
+        lambda: MagicMock(),
+    )
+    monkeypatch.setattr(
         "data_extractor.run_extract.check_gcs_marking",
         lambda *a: True,
     )

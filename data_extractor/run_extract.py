@@ -47,9 +47,15 @@ def orchestrate_extract(target_folder: str) -> int:
     - Per-file extraction failure: uploads partial metadata with error details; returns 1.
     """
 
-    service = initialize_gdrive()
     metadata_path = f"logs/{target_folder}_metatdata.json"
     marketing_flag_path = f"status/{target_folder}.success"
+
+    # Deduplication check
+    if check_gcs_marking(MARKET_BUCKET, marketing_flag_path):
+        print(f"[INFO]: {target_folder} already processed.")
+        return 0
+
+    service = initialize_gdrive()
 
     metadata = {
         "execution_id": str(uuid.uuid4()),
@@ -57,11 +63,6 @@ def orchestrate_extract(target_folder: str) -> int:
         "errors": [],
         "status": "",
     }
-
-    # Deduplication check
-    if check_gcs_marking(MARKET_BUCKET, marketing_flag_path):
-        print(f"[INFO]: {target_folder} already processed.")
-        return 0
 
     # Extract and validate target folder id
     folder_id = get_target_folder_id(target_folder, service)
