@@ -7,7 +7,7 @@ config {
   assertions: {
     nonNull: ["week_start","traffic_source", "product_category"]       
   },
-  tags: ["layer:ml"]
+  tags: ["layer:ml", "build_pipeline"]
 }
 
 SELECT

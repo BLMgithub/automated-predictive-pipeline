@@ -7,7 +7,7 @@ config {
   assertions: {
     nonNull: ["event_date", "canonical_traffic_source", "product_category", "total_orders", "total_revenue", "total_spend"]
   },
-  tags: ["layer:dashboard"]
+  tags: ["layer:dashboard", "build_pipeline"]
 }
 
 WITH merge_core_source AS (

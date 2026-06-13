@@ -2,5 +2,6 @@ config {
   type: "declaration",
   database: "automated-predictive-pipeline",
   schema: "core_ecom_dataset",
-  name: "order_items"
+  name: "order_items",
+  tags: ["build_pipeline"]
 }

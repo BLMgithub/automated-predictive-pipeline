@@ -8,7 +8,7 @@ config {
     nonNull: ["campaign_id", "campaign_date", "campaign_name", "canonical_traffic_source", "target_category", "spend_usd"],
     rowConditions: ["canonical_traffic_source IN ('Search', 'Facebook', 'Email', 'Display', 'Organic')"]
   },
-  tags: ["layer:dashboard"]
+  tags: ["layer:dashboard", "build_pipeline"]
 }
 
 WITH clean_campaign_registry AS (
