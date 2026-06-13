@@ -1,0 +1,16 @@
+.git/
+.gitignore
+.gitattributes
+.github/
+.gcp/
+
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+.coveragerc
+.ruff_cache/
+
+.vscode/
+dev-requirements.txt
