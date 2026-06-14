@@ -1,8 +1,8 @@
 # Create required SAs
 locals {
   service_accounts = [
-    "job-invoker-sa",
     "drive-extractor-sa",
+    "dataform-pipeline-sa",
   ]
 }
 

@@ -1,0 +1,86 @@
+# ------------------------------------------------------------
+# MARKETING DATASET (EXTERNALIZED)
+# ------------------------------------------------------------
+
+resource "google_bigquery_dataset" "marketing_dataset" {
+  dataset_id = var.marketing_dataset
+  location   = var.dataset_location
+
+  delete_contents_on_destroy = false
+}
+
+locals {
+  marketing_external_tables = {
+    ext_campaign_registry     = "campaign_registry"
+    ext_marketing_spend_daily = "marketing_spend_daily"
+  }
+}
+
+resource "google_bigquery_table" "external_marketing" {
+  for_each   = local.marketing_external_tables
+  dataset_id = google_bigquery_dataset.marketing_dataset.dataset_id
+  table_id   = each.key # with prefix "ext_"
+
+  external_data_configuration {
+    autodetect    = true
+    source_format = "CSV"
+    source_uris = [
+      "gs://${google_storage_bucket.marketing_archival_bucket.name}/data/${each.value}_*.csv"
+    ]
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+# Static date range for project purpose only
+resource "google_bigquery_table" "calendar_holiday" {
+  dataset_id = google_bigquery_dataset.marketing_dataset.dataset_id
+  table_id   = "ext_holiday_calendar"
+
+  external_data_configuration {
+    autodetect    = true
+    source_format = "CSV"
+    source_uris   = ["gs://${google_storage_bucket.marketing_archival_bucket.name}/calendar/holiday_calendar.csv"]
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+
+# ------------------------------------------------------------
+# CORE MARKETING DATASET
+# ------------------------------------------------------------
+
+resource "google_bigquery_dataset" "core_ecom_dataset" {
+  dataset_id = var.core_ecom_dataset
+  location   = var.dataset_location
+
+  delete_contents_on_destroy = false
+}
+
+
+# ------------------------------------------------------------
+# CONTRACTED DATASET
+# ------------------------------------------------------------
+
+resource "google_bigquery_dataset" "contracted_dataset" {
+  dataset_id = var.contracted_dataset
+  location   = var.dataset_location
+
+  delete_contents_on_destroy = false
+}
+
+# ------------------------------------------------------------
+# PUBLISHED DATASET
+# ------------------------------------------------------------
+
+resource "google_bigquery_dataset" "published_dataset" {
+  dataset_id = var.published_dataset
+  location   = var.dataset_location
+
+  delete_contents_on_destroy = false
+}
