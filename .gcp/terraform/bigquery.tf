@@ -11,6 +11,7 @@ resource "google_bigquery_dataset" "marketing_dataset" {
 
 locals {
   marketing_external_tables = {
+    # <persist table name> = <GCS file name>
     ext_campaign_registry     = "campaign_registry"
     ext_marketing_spend_daily = "marketing_spend_daily"
   }
@@ -19,7 +20,7 @@ locals {
 resource "google_bigquery_table" "external_marketing" {
   for_each   = local.marketing_external_tables
   dataset_id = google_bigquery_dataset.marketing_dataset.dataset_id
-  table_id   = each.key # with prefix "ext_"
+  table_id   = each.key
 
   external_data_configuration {
     autodetect    = true

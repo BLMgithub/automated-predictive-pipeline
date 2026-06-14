@@ -13,7 +13,7 @@ locals {
 resource "google_project_iam_member" "dataform_pipeline_access" {
   for_each = toset(local.pipeline_roles)
   project  = var.project_id
-  member   = "serviceAccount:${google_service_account.platform_accounts["dataform-pipeline-sa"]}"
+  member   = "serviceAccount:${google_service_account.platform_accounts["dataform-pipeline-sa"].email}"
   role     = each.key
 }
 
