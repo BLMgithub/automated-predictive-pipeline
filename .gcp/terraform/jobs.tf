@@ -1,5 +1,5 @@
 resource "google_cloud_run_v2_job" "extractor" {
-  name       = "google-drive-extract-${var.environment}"
+  name       = "google-drive-extractor-${var.environment}"
   location   = var.region
   depends_on = [google_project_service.enabled_APIs]
 
