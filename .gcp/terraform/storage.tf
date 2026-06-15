@@ -1,6 +1,6 @@
 resource "google_storage_bucket" "marketing_archival_bucket" {
   name                        = "marketing-archival-${var.environment}"
-  location                    = var.region
+  location                    = var.dataset_location # Uniformed with bigquery datasets
   force_destroy               = false
   uniform_bucket_level_access = true
 

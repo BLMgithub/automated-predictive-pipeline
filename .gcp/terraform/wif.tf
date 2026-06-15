@@ -16,7 +16,7 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
   # Map <GCP attributes> = <GitHub OIDC token claims>
   attribute_mapping = {
     "google.subject"       = "assertion.sub"
-    "attributes.actor"     = "assertion.actor"
+    "attribute.actor"      = "assertion.actor"
     "attribute.repository" = "assertion.repository"
   }
 

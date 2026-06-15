@@ -25,6 +25,14 @@ resource "google_bigquery_table" "external_marketing" {
   external_data_configuration {
     autodetect    = true
     source_format = "CSV"
+
+    csv_options {
+      encoding          = "UTF-8"
+      field_delimiter   = ","
+      skip_leading_rows = 1
+      quote             = ""
+    }
+
     source_uris = [
       "gs://${google_storage_bucket.marketing_archival_bucket.name}/data/${each.value}_*.csv"
     ]
@@ -37,13 +45,22 @@ resource "google_bigquery_table" "external_marketing" {
 
 # Static date range for project purpose only
 resource "google_bigquery_table" "calendar_holiday" {
-  dataset_id = google_bigquery_dataset.marketing_dataset.dataset_id
-  table_id   = "ext_holiday_calendar"
+  dataset_id  = google_bigquery_dataset.marketing_dataset.dataset_id
+  description = "US holiday calendar and recorded peak season"
+  table_id    = "ext_holiday_calendar"
 
   external_data_configuration {
     autodetect    = true
     source_format = "CSV"
-    source_uris   = ["gs://${google_storage_bucket.marketing_archival_bucket.name}/calendar/holiday_calendar.csv"]
+
+    csv_options {
+      encoding          = "UTF-8"
+      field_delimiter   = ","
+      skip_leading_rows = 1
+      quote             = ""
+    }
+
+    source_uris = ["gs://${google_storage_bucket.marketing_archival_bucket.name}/calendar/holiday_calendar.csv"]
   }
 
   lifecycle {
