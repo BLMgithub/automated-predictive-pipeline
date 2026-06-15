@@ -1,7 +1,12 @@
 config {
-  type: "declaration",
+  type: "view",
   database: "automated-predictive-pipeline",
-  schema: "core_ecom_dataset",
-  name: "users",
+  schema: "source_dataset",
+  name: "raw_users",
   tags: ["build_pipeline"]
 }
+
+SELECT
+  id,
+  traffic_source
+FROM `${database()}.core_ecom_dataset.users`

@@ -80,6 +80,16 @@ resource "google_bigquery_dataset" "core_ecom_dataset" {
   delete_contents_on_destroy = false
 }
 
+# ------------------------------------------------------------
+# SOURCE DATASET
+# ------------------------------------------------------------
+
+resource "google_bigquery_dataset" "source_dataset" {
+  dataset_id = var.source_dataset
+  location   = var.dataset_location
+
+  delete_contents_on_destroy = false
+}
 
 # ------------------------------------------------------------
 # CONTRACTED DATASET

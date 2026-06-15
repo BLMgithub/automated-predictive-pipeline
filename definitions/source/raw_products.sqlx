@@ -1,7 +1,15 @@
 config {
-  type: "declaration",
+  type: "view",
   database: "automated-predictive-pipeline",
-  schema: "core_ecom_dataset",
-  name: "products",
+  schema: "source_dataset",
+  name: "raw_products",
   tags: ["build_pipeline"]
 }
+
+
+
+SELECT
+  id,
+  category,
+  distribution_center_id,
+FROM `${database()}.core_ecom_dataset.products`

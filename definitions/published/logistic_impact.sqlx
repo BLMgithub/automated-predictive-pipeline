@@ -18,10 +18,10 @@ WITH logistic_source AS (
     itm.status,
     itm.order_id,
     DATE_DIFF(DATE(itm.shipped_at), DATE(itm.created_at), DAY) AS fulfillment_days
-  FROM ${ref("order_items")} AS itm
-  LEFT JOIN ${ref("products")} AS prd
+  FROM ${ref("raw_order_items")} AS itm
+  LEFT JOIN ${ref("raw_products")} AS prd
     ON itm.product_id = prd.id
-  LEFT JOIN ${ref("distribution_centers")} AS dist
+  LEFT JOIN ${ref("raw_distribution_centers")} AS dist
     ON prd.distribution_center_id = dist.id
   WHERE itm.created_at IS NOT NULL
 )

@@ -29,12 +29,12 @@ core_agg AS (
     COUNT(DISTINCT ord.order_id) total_orders,
     COUNT(CASE WHEN LOWER(itm.status) = "returned" THEN 1 END) AS total_returned,
     AVG(DATE_DIFF(DATE(itm.shipped_at), DATE(itm.created_at), DAY)) AS avg_fulfillment_days
-  FROM ${ref("order_items")} AS itm
-  INNER JOIN ${ref("orders")} AS ord
+  FROM ${ref("raw_order_items")} AS itm
+  INNER JOIN ${ref("raw_orders")} AS ord
     ON itm.order_id = ord.order_id
-  LEFT JOIN ${ref("products")} AS prd
+  LEFT JOIN ${ref("raw_products")} AS prd
     ON itm.product_id = prd.id
-  LEFT JOIN ${ref("users")} AS usr
+  LEFT JOIN ${ref("raw_users")} AS usr
     ON ord.user_id = usr.id
   GROUP BY 1, 2, 3
 )

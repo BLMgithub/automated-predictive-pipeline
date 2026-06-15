@@ -4,8 +4,8 @@
     Author: Bryan Melvida
 
     Purpose:
-    - Extracts selected features from thelook_ecommerce to build core tables.
-    - Defines the primary schema for predictive modeling and analysis.
+    - Extracts selected features from thelook_ecommerce to build core tables,
+      to act as the "Main Marketing Data Sources" for this project Simulation.
    ============================================================ */
 
 

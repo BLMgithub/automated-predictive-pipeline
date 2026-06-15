@@ -1,7 +1,12 @@
 config {
-  type: "declaration",
+  type: "view",
   database: "automated-predictive-pipeline",
-  schema: "core_ecom_dataset",
-  name: "orders",
+  schema: "source_dataset",
+  name: "raw_orders",
   tags: ["build_pipeline"]
 }
+
+SELECT
+  order_id,
+  user_id
+FROM `${database()}.core_ecom_dataset.orders`
