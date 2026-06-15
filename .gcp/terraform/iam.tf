@@ -3,6 +3,7 @@ locals {
   service_accounts = [
     "drive-extractor-sa",
     "dataform-pipeline-sa",
+    "github-actions-deployer-sa",
   ]
 }
 
