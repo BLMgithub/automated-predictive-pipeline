@@ -7,7 +7,7 @@ config {
   assertions: {
     nonNull: ["order_date", "dc_name", "product_category"]
   },
-  tags: ["layer:dashboard", "build_pipeline"]
+  tags: ["build_pipeline"]
 }
 
 WITH logistic_source AS (

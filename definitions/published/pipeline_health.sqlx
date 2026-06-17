@@ -7,7 +7,7 @@ config {
   assertions: {
     rowConditions: ["data_loss_percentage <= 0.10"]
   },
-  tags: ["layer:dashboard", "build_pipeline"]
+  tags: ["build_pipeline"]
 }
 
 SELECT

@@ -5,7 +5,7 @@ config {
   name: "revenue_forecast_model",
   description: "BQML LINEAR_REG training on ml_training_data to forecast revenue_per_campaign",
   hasOutput: false,
-  tags: ["layer:ml"]
+  tags: ["ml:train"]
 }
 
 CREATE OR REPLACE MODEL `${database()}`.${schema()}.`revenue_forecast`

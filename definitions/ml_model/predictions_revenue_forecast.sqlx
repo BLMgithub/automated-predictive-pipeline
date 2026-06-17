@@ -8,7 +8,7 @@ config {
   assertions: {
     nonNull: ["week_start", "traffic_source", "product_category", "predicted_next_week_revenue_per_campaign"]
   },
-  tags: ["layer:ml", "ml:predict"]
+  tags: ["ml:predict"]
 }
 
 SELECT
