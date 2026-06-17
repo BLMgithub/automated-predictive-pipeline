@@ -4,6 +4,8 @@ locals {
     "drive-extractor-sa",
     "dataform-pipeline-sa",
     "github-actions-deployer-sa",
+    "extractor-orchestration-sa",
+    "dataform-orchestration-sa"
   ]
 }
 
