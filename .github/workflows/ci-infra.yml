@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: .gcp/terraforms
+        working-directory: .gcp/terraform
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
