@@ -22,7 +22,7 @@ permissions:
 env:
   ENV: dev
   REGION: us-east1
-  REPO_NAME: BLMgithub/automated-predictive-pipeline
+  REPO_NAME: marketing-predictive-pipeline-dev
   IMAGE_NAME: data-extractor-dev
   JOB_NAME: google-drive-extractor-dev
 
