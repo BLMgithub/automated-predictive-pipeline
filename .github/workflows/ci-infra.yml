@@ -1,0 +1,53 @@
+name: CI - Infra Enforcement
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.gcp/terraform/**'
+      - '.github/workflows/ci-infra.yml'
+  
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
+  
+jobs:
+  terraform-enforce:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .gcp/terraforms
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.DEPLOYER_SA_EMAIL }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply (Sync)
+        env:
+            TF_VAR_github_repo: BLMgithub/automated-predictive-pipeline
+            TF_VAR_project_id: automated-predictive-pipeline
+            TF_VAR_environment: dev
+            TF_VAR_region: us-east1
+            TF_VAR_dataset_location: US
+            TF_VAR_source_dataset: source_dataset
+            TF_VAR_marketing_dataset: marketing_dataset
+            TF_VAR_core_ecom_dataset: core_ecom_dataset
+            TF_VAR_contracted_dataset: contracted_dataset
+            TF_VAR_published_dataset: published_dataset
+            TF_VAR_alert_email_map: ${{ secrets.ALERT_EMAIL_MAP }}
+        run: terraform apply -auto-approve

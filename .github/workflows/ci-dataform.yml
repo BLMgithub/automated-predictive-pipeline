@@ -1,4 +1,4 @@
-name: CI/CD - Dataform Pipeline
+name: CI - Dataform Pipeline
 
 on:
   pull_request:
@@ -7,19 +7,20 @@ on:
       - 'definitions/**'
       - 'includes/**'
       - 'workflow_settings.yaml'
-      - '.github/workflows/ci-cd-dataform.yml'
+      - '.github/workflows/ci-dataform.yml'
   push:
     branches: [main]
     paths:
       - 'definitions/**'
       - 'includes/**'
       - 'workflow_settings.yaml'
-      - '.github/workflows/ci-cd-dataform.yml'
+      - '.github/workflows/ci-dataform.yml'
 
   # Manual run
   workflow_dispatch:
 
 jobs:
+
   code-quality:
     runs-on: ubuntu-latest
     permissions:
