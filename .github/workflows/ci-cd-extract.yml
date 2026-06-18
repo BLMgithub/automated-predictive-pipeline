@@ -15,6 +15,17 @@ on:
   # Manual run
   workflow_dispatch:
 
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+env:
+  ENV: dev
+  REGION: us-east1
+  REPO_NAME: marketing-predictive-pipeline-dev
+  IMAGE_NAME: data-extractor-dev
+  JOB_NAME: google-drive-extractor-dev
+
 jobs:
   code-quality-test:
     runs-on: ubuntu-latest
@@ -54,3 +65,36 @@ jobs:
             --cov=data_extractor \
             --cov-report=term-missing \
             --cov-fail-under=85
+
+  build-and-deploy:
+    needs: code-quality-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+        # Handshake to GCP
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.DEPLOYER_SA_EMAIL }}
+
+      - name: Configure Docker Auth
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and Push Docker Image
+        run: |
+          IMAGE_PATH="${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
+          docker build -f data_extractor/Dockerfile -t $IMAGE_PATH .
+          docker push $IMAGE_PATH
+
+      - name: Update Cloud Run Job
+        run: |
+          IMAGE_PATH="${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
+          gcloud run jobs update ${{ env.JOB_NAME }} \
+          --image $IMAGE_PATH \
+          --region ${{ env.REGION }}

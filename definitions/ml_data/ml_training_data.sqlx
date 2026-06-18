@@ -7,7 +7,7 @@ config {
   assertions: {
     nonNull: ["traffic_source", "product_category", "next_week_revenue_per_campaign"]       
   },
-  tags: ["layer:ml"]
+  tags: ["build_pipeline"]
 }
 
 WITH train_features AS (

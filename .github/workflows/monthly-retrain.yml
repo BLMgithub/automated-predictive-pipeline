@@ -1,0 +1,72 @@
+name: ML - Monthly Retrain
+
+on:
+  repository_dispatch:
+    types: [monthly-retrain]
+
+jobs:
+  run-retrain:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 25
+          cache: 'npm'
+
+      - name: Install Dataform CLI
+        run: npm install -g @dataform/cli@3.0.56
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.DEPLOYER_SA_EMAIL }}
+
+      - name: Setup GCloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Inject Dataform Credentials File
+        run: |
+          jq -n \
+            --arg projectId "${{ secrets.GCP_PROJECT_ID }}" \
+            --arg location "${{ secrets.DATASET_LOCATION }}" \
+            '{
+              projectId: $projectId,
+              location: $location
+            }' > .df-credentials.json
+
+      - name: Install Project Dependencies
+        run: dataform install
+
+      - name: Refresh Pipeline Data
+        run: dataform run --tags="build_pipeline"
+
+      - name: Run Monthly Model Retrain
+        run: dataform run --tags="ml:train"
+
+      - name: Report Failure to GCP
+        if: failure()
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          cat <<'EOF' > /tmp/failure-log.json
+          {
+            "workflow": "${{ github.workflow }}",
+            "repository": "${{ github.repository }}",
+            "event_type": "monthly-retrain",
+            "status": "failure",
+            "actor": "${{ github.actor }}"
+          }
+          EOF
+          gcloud logging write github-actions-workflows /tmp/failure-log.json \
+            --payload-type=json \
+            --severity=ERROR \
+            --project="${GCP_PROJECT_ID}"

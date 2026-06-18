@@ -2,5 +2,6 @@ config {
   type: "declaration",
   database: "automated-predictive-pipeline",
   schema: "marketing_dataset",
-  name: "ext_marketing_spend_daily"
+  name: "ext_marketing_spend_daily",
+  tags: ["build_pipeline"]
 }

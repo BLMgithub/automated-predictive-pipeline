@@ -1,6 +1,16 @@
 config {
-  type: "declaration",
+  type: "view",
   database: "automated-predictive-pipeline",
-  schema: "core_ecom_dataset",
-  name: "order_items"
+  schema: "source_dataset",
+  name: "raw_order_items",
+  tags: ["build_pipeline"]
 }
+
+SELECT
+  order_id,
+  product_id,
+  created_at,
+  shipped_at,
+  sale_price,
+  status
+FROM `${database()}.core_ecom_dataset.order_items`

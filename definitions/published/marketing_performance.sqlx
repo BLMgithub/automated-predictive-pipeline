@@ -7,7 +7,7 @@ config {
   assertions: {
     nonNull: ["event_date", "canonical_traffic_source", "product_category", "total_orders", "total_revenue", "total_spend"]
   },
-  tags: ["layer:dashboard"]
+  tags: ["build_pipeline"]
 }
 
 WITH merge_core_source AS (
@@ -18,12 +18,12 @@ WITH merge_core_source AS (
     ord.order_id,
     ord.user_id,
     DATE(itm.created_at) AS event_date
-  FROM ${ref("order_items")} AS itm
-  INNER JOIN ${ref("orders")} AS ord
+  FROM ${ref("raw_order_items")} AS itm
+  INNER JOIN ${ref("raw_orders")} AS ord
     ON itm.order_id = ord.order_id
-  LEFT JOIN ${ref("products")} AS prd
+  LEFT JOIN ${ref("raw_products")} AS prd
     ON itm.product_id = prd.id
-  LEFT JOIN ${ref("users")} AS usr
+  LEFT JOIN ${ref("raw_users")} AS usr
     ON ord.user_id = usr.id
 ),
 
