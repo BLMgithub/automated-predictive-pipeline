@@ -34,6 +34,8 @@ locals {
     "drive.googleapis.com",
     "bigquery.googleapis.com",
     "secretmanager.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
   ]
 }
 

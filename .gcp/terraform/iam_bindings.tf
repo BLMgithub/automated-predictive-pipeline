@@ -16,10 +16,12 @@ locals {
     "roles/iam.workloadIdentityPoolAdmin",   # Manage WIF in wif.tf
     "roles/monitoring.admin",                # Manage Monitoring in monitoring.tf
     "roles/logging.configWriter",            # Required for log-based alert policies
+    "roles/logging.logWriter",               # Write failure logs from GitHub Actions
     "roles/iam.serviceAccountAdmin",         # Manage Alert policies in monitoring.tf
     "roles/iam.admin",                       # Manage Iam roles
     "roles/bigquery.admin",                  # Manage BigQuery datasets and views
     "roles/serviceusage.serviceUsageAdmin",  # Manage APIs
+    "roles/secretmanager.admin",             # Manage secrets and their IAM policies
   ]
 }
 
