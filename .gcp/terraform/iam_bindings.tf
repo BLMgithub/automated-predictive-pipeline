@@ -2,7 +2,9 @@
 # PROJECT-LEVEL BINDINGS
 # ------------------------------------------------------------
 
-# Roles for github-actions-deployer-sa
+# -------------------------------------------
+# GitHub Deployer
+# -------------------------------------------
 locals {
   deployer_roles = [
     "roles/run.developer",                   # Manage Cloud Run jobs
@@ -38,7 +40,9 @@ resource "google_service_account_iam_member" "github_deployer_sa" {
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool.name}/attribute.repository/${var.github_repo}"
 }
 
-# Roles for dataform-pipeline-sa
+# -------------------------------------------
+# Dataform pipeline
+# -------------------------------------------
 locals {
   pipeline_roles = [
     "roles/bigquery.admin",      # Manage bigquery datasets/views/tables
@@ -51,14 +55,6 @@ resource "google_project_iam_member" "dataform_pipeline_access" {
   project  = var.project_id
   member   = "serviceAccount:${google_service_account.platform_accounts["dataform-pipeline-sa"].email}"
   role     = each.key
-}
-
-
-# Dataform workflows role bindings
-resource "google_project_iam_member" "dataform_orchestration_workflow" {
-  project = var.project_id
-  role    = "roles/workflows.invoker"
-  member  = "serviceAccount:${google_service_account.platform_accounts["dataform-orchestration-sa"].email}"
 }
 
 resource "google_secret_manager_secret_iam_member" "github_token_accessor" {
@@ -74,6 +70,31 @@ resource "google_secret_manager_secret" "github_token" {
     auto {}
   }
   depends_on = [google_project_service.enabled_APIs]
+}
+
+# -------------------------------------------
+# Orchestrations
+# -------------------------------------------
+
+locals {
+  dataform_orchestration_roles = [
+    "roles/workflows.invoker",
+    "roles/logging.logWriter"
+  ]
+}
+
+resource "google_project_iam_member" "dataform_orchestration_workflow" {
+  for_each = toset(local.dataform_orchestration_roles)
+  project  = var.project_id
+  member   = "serviceAccount:${google_service_account.platform_accounts["dataform-orchestration-sa"].email}"
+  role     = each.key
+}
+
+
+resource "google_project_iam_member" "extractor_orchestration_invoker" {
+  project = var.project_id
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.platform_accounts["extractor-orchestration-sa"].email}"
 }
 
 # ------------------------------------------------------------

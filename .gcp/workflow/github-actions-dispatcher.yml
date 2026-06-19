@@ -15,7 +15,7 @@ main:
 
     - decode_token:
         assign:
-          - github_token: ${base64.decode(token_response.payload.data)}
+          - github_token: ${text.decode(base64.decode(token_response.payload.data))}
 
     - trigger_github_action:
         try:
@@ -36,7 +36,7 @@ main:
             - log_success:
                 call: sys.log
                 args:
-                  text: ${"[INFO] GitHub dispatch success " + event_type + " (HTTP " + github_response.code + ")"}
+                  text: ${"[INFO] GitHub dispatch success " + event_type + " (HTTP " + string(github_response.code) + ")"}
                   severity: INFO
 
         # Retries with doubling waiting time each retry
@@ -54,7 +54,7 @@ main:
               - log_error:
                   call: sys.log
                   args:
-                    text: ${"[ERROR] GitHub dispatch failed for " + event_type + " " + json.encode_to_string(e)}
+                    text: '${"[ERROR] GitHub dispatch failed for " + event_type + ". Error: " +  json.encode_to_string(e)}'
                     severity: CRITICAL
               - raise_error:
                   raise: ${e}

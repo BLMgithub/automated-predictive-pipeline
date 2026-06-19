@@ -64,8 +64,7 @@ jobs:
             "event_type": "weekly-predict",
             "status": "failure",
             "actor": "${{ github.actor }}"
-          }'\
-          --payload-type=json \
+          }' --payload-type=json \
           --severity=ERROR \
           --project="${GCP_PROJECT_ID}"
 
