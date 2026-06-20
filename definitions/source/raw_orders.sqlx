@@ -8,5 +8,6 @@ config {
 
 SELECT
   order_id,
-  user_id
+  user_id,
+  num_of_item
 FROM `${database()}.core_ecom_dataset.orders`

@@ -12,4 +12,5 @@ SELECT
   id,
   category,
   distribution_center_id,
+  cost
 FROM `${database()}.core_ecom_dataset.products`

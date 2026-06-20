@@ -5,7 +5,7 @@
 resource "google_cloud_scheduler_job" "extractor_trigger" {
   name        = "midnight-trigger-${var.environment}"
   description = "Execute drive-extractor-sa daily 12AM (PHT)"
-  schedule    = "every day 12:00"
+  schedule    = "every day 00:00"
   time_zone   = "Asia/Manila"
   region      = var.region
 

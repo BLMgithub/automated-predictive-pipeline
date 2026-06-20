@@ -17,17 +17,26 @@ SELECT
   total_campaign,
   total_orders,
   total_returned,
-  is_peak_date,
-  is_holiday_season,
+  avg_items_per_order,
+  avg_margin_per_item,
+  avg_fulfillment_days,
+  revenue_per_campaign,
   SAFE_DIVIDE(
-    total_spend, NULLIF(LAG(total_spend, 1) 
+    total_spend, NULLIF(LAG(total_spend, 1)
     OVER (PARTITION BY traffic_source, product_category ORDER BY week_start), 0)
-  ) AS spend_momentum,    
+  ) AS spend_momentum,
+  SAFE_DIVIDE(
+    revenue_per_campaign, NULLIF(LAG(revenue_per_campaign, 1)
+    OVER (PARTITION BY traffic_source, product_category ORDER BY week_start), 0)
+  ) AS revenue_momentum,
   LAG(SAFE_DIVIDE(total_returned, NULLIF(total_orders, 0)), 1)
     OVER (PARTITION BY traffic_source, product_category ORDER BY week_start)
     AS return_rate_prev_wk,
   LAG(total_orders, 1)
     OVER (PARTITION BY traffic_source, product_category ORDER BY week_start)
     AS total_orders_prev_wk,
+  LAG(avg_fulfillment_days, 1)
+    OVER (PARTITION BY traffic_source, product_category ORDER BY week_start)
+    AS fulfillment_prev_wk,
 FROM ${ref("ml_core_dataset")}
 WHERE week_start >= '2026-01-01'

@@ -15,11 +15,16 @@
 
 CREATE OR REPLACE MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast` -- noqa
 OPTIONS (
+  warm_start = false,
   model_type = 'LINEAR_REG',
   input_label_cols = ['next_week_revenue_per_campaign'],
-  data_split_method = 'AUTO_SPLIT'
-  -- l2_reg = HPARAM_RANGE(0, 1),
-  -- num_trials = 5,
+  data_split_method = 'AUTO_SPLIT',
+  l2_reg = 0.1,
+  L1_reg = 0.1,
+  MAX_ITERATIONS = 20,
+  EARLY_STOP = true,
+  MIN_REL_PROGRESS = 0.01,
+  LS_INIT_LEARN_RATE = 0.1,
   -- hparam_tuning_objectives = ['R2_SCORE']
 ) AS
 SELECT * EXCEPT(week_start) -- noqa

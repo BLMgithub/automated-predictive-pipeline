@@ -17,9 +17,13 @@ SELECT
   core.product_category,
   core.total_campaign,
   core.total_orders,
-  pred.spend_momentum,  
-  core.is_peak_date,
-  core.is_holiday_season,
+  core.total_returned,
+  core.avg_margin_per_item,
+  core.avg_items_per_order,
+  core.avg_fulfillment_days,
+  pred.spend_momentum,
+  pred.revenue_momentum,
+  pred.fulfillment_prev_wk,
   pred.predicted_next_week_revenue_per_campaign,
   LEAD(core.revenue_per_campaign, 1)
     OVER (PARTITION BY core.traffic_source, core.product_category ORDER BY core.week_start)
