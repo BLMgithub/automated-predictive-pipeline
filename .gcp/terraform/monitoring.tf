@@ -19,8 +19,9 @@ resource "google_monitoring_alert_policy" "scheduler_midnight_failure" {
     condition_matched_log {
       filter = <<-EOT
 				resource.type="cloud_scheduler_job"
-				jsonPayload.debugInfo="URL_ERROR-ERROR_NOT_FOUND. Original HTTP response code number = 404" OR jsonPayload.debugInfo="URL_ERROR-ERROR_AUTHENTICATION. Original HTTP response code number = 401"
+				resource.labels.location=us-east1
 				resource.labels.job_id="midnight-trigger-${var.environment}"
+        severity=ERROR
 			EOT
     }
   }
@@ -37,7 +38,7 @@ resource "google_monitoring_alert_policy" "scheduler_midnight_failure" {
     content   = <<-EOT
       ## ALERT: Midnight Google Drive Extraction Scheduler Failed!
 
-      **What Happened:** The `midnight-trigger-${var.environment}` Cloud Scheduler job failed to invoke the extraction workflow.
+      **What Happened:** The `midnight-trigger-${var.environment}` Cloud Scheduler job failed to invoke the extraction run job.
 
       **Impact:**
       - Daily marketing CSVs were not pulled from Google Drive.
@@ -114,8 +115,9 @@ resource "google_monitoring_alert_policy" "scheduler_weekly_failure" {
     condition_matched_log {
       filter = <<-EOT
 				resource.type="cloud_scheduler_job"
-				jsonPayload.debugInfo="URL_ERROR-ERROR_NOT_FOUND. Original HTTP response code number = 404" OR jsonPayload.debugInfo="URL_ERROR-ERROR_AUTHENTICATION. Original HTTP response code number = 401"
+				resource.labels.location=us-east1
 				resource.labels.job_id="weekly-prediction-trigger-${var.environment}"
+        severity=ERROR
 			EOT
     }
   }
@@ -160,8 +162,9 @@ resource "google_monitoring_alert_policy" "scheduler_monthly_failure" {
     condition_matched_log {
       filter = <<-EOT
 				resource.type="cloud_scheduler_job"
-				jsonPayload.debugInfo="URL_ERROR-ERROR_NOT_FOUND. Original HTTP response code number = 404" OR jsonPayload.debugInfo="URL_ERROR-ERROR_AUTHENTICATION. Original HTTP response code number = 401"
+				resource.labels.location=us-east1
 				resource.labels.job_id="monthly-retrain-trigger-${var.environment}"
+        severity=ERROR
 			EOT
     }
   }

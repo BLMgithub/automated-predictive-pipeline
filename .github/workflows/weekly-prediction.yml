@@ -50,7 +50,7 @@ jobs:
         run: dataform run --tags="build_pipeline"
 
       - name: Run Weekly Prediction
-        run: dataform run --tags="ml:predict"
+        run: dataform run --tags="ml:evaluate","ml:predict"
 
       - name: Report Failure to GCP
         if: failure()
@@ -64,9 +64,6 @@ jobs:
             "event_type": "weekly-predict",
             "status": "failure",
             "actor": "${{ github.actor }}"
-          }'\
-          --payload-type=json \
+          }' --payload-type=json \
           --severity=ERROR \
           --project="${GCP_PROJECT_ID}"
-
-          
