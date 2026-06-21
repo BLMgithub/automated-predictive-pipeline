@@ -3,9 +3,9 @@ config {
   database:"automated-predictive-pipeline",
   schema: "published_dataset",
   name: "ml_training_data",
-  description: "View with lagged feature windows and next-week revenue label (pre-2026) for model training",
+  description: "Training dataset (pre-2026) for model training",
   assertions: {
-    nonNull: ["traffic_source", "product_category", "next_week_revenue_per_campaign"]       
+    nonNull: ["traffic_source", "product_category", "next_week_revenue_per_campaign"]      
   },
   tags: ["build_pipeline"]
 }

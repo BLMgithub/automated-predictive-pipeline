@@ -1,0 +1,32 @@
+config {
+  type: "table",
+  database: "automated-predictive-pipeline",
+  schema: "published_dataset",
+  name: "predictions_evaluation",
+  description: "Model predictions evaluation on holdout set joined with actuals for comparison",
+  dependencies: ["revenue_forecast_model"],
+  assertions: {
+    nonNull: ["week_start", "traffic_source", "product_category", "prediction_next_week_revenue", "actual_next_week_revenue"]
+  },
+  tags: ["ml:evaluate"]
+}
+
+WITH prediction_eval_summary AS (
+  SELECT
+    *
+  FROM ML.PREDICT(
+    MODEL `${database()}.${schema()}.revenue_forecast`,
+    (SELECT * FROM ${ref("ml_holdout_data")})
+  ) as pred
+ )
+
+SELECT
+  week_start,
+  traffic_source,
+  product_category,
+  SUM(predicted_next_week_revenue_per_campaign) AS prediction_next_week_revenue,
+  SUM(next_week_revenue_per_campaign) AS actual_next_week_revenue,
+FROM prediction_eval_summary
+WHERE next_week_revenue_per_campaign iS NOT NULL
+GROUP BY 1, 2, 3
+ORDER BY 1
