@@ -1,7 +1,0 @@
-config {
-  type: "declaration",
-  database: "automated-predictive-pipeline",
-  schema: "marketing_dataset",
-  name: "ext_holiday_calendar",
-  tags: ["build_pipeline"]
-}
