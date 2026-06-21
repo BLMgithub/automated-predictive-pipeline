@@ -19,8 +19,8 @@ resource "google_monitoring_alert_policy" "scheduler_midnight_failure" {
     condition_matched_log {
       filter = <<-EOT
 				resource.type="cloud_scheduler_job"
-				resource.labels.location=us-east1
 				resource.labels.job_id="midnight-trigger-${var.environment}"
+        resource.labels.location=${var.region}
         severity=ERROR
 			EOT
     }
@@ -115,8 +115,8 @@ resource "google_monitoring_alert_policy" "scheduler_weekly_failure" {
     condition_matched_log {
       filter = <<-EOT
 				resource.type="cloud_scheduler_job"
-				resource.labels.location=us-east1
 				resource.labels.job_id="weekly-prediction-trigger-${var.environment}"
+        resource.labels.location=${var.region}
         severity=ERROR
 			EOT
     }
@@ -162,8 +162,8 @@ resource "google_monitoring_alert_policy" "scheduler_monthly_failure" {
     condition_matched_log {
       filter = <<-EOT
 				resource.type="cloud_scheduler_job"
-				resource.labels.location=us-east1
 				resource.labels.job_id="monthly-retrain-trigger-${var.environment}"
+        resource.labels.location=${var.region}
         severity=ERROR
 			EOT
     }

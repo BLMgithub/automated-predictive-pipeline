@@ -97,7 +97,7 @@ resource "google_project_iam_member" "extractor_orchestration_invoker" {
   member  = "serviceAccount:${google_service_account.platform_accounts["extractor-orchestration-sa"].email}"
 }
 
-# ============================================================
+# ------------------------------------------------------------
 # RESOURCE-LEVEL BINDINGS (Storage & Compute)
 # ============================================================
 
