@@ -1,0 +1,43 @@
+config {
+  type: "table",
+  database: "automated-predictive-pipeline",
+  schema: "published_dataset",
+  name: "predictions_nextweek",
+  description: "Live weekly model predictions",
+  dependencies: ["revenue_forecast_model"],
+  assertions: {
+    nonNull: ["week_start", "traffic_source", "product_category", "predicted_next_week_revenue"]
+  },
+  tags: ["ml:predict"]
+}
+
+WITH next_week_prediction AS (
+  SELECT
+    week_start,
+    traffic_source,
+    product_category,
+    total_campaign,
+    total_orders,
+    total_returned,
+    avg_margin_per_item,
+    avg_items_per_order,
+    avg_fulfillment_days,
+    spend_momentum,
+    revenue_momentum,
+    fulfillment_prev_wk,
+    predicted_next_week_revenue_per_campaign,
+  FROM ML.PREDICT(
+    MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast`,
+    (SELECT * FROM ${ref("ml_weekly_data")})
+  )
+)
+
+SELECT
+  week_start,
+  traffic_source,
+  product_category,
+  SUM(predicted_next_week_revenue_per_campaign) AS predicted_next_week_revenue
+FROM next_week_prediction
+GROUP BY 1, 2, 3
+ORDER BY 1
+

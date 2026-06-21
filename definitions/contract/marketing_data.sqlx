@@ -27,7 +27,6 @@ clean_marketing_spend_daily AS (
     campaign_id,
     ${registry.normalize_date("date")} AS campaign_date,
     spend_usd,
-    clicks
   FROM ${ref("ext_marketing_spend_daily")}
 )
 
@@ -37,7 +36,7 @@ SELECT
   cmr.campaign_name,
   cmr.canonical_traffic_source,
   cmr.target_category,
-  msd.spend_usd
+  msd.spend_usd,
 FROM clean_marketing_spend_daily AS msd
 INNER JOIN clean_campaign_registry AS cmr
   ON msd.campaign_id = cmr.campaign_id

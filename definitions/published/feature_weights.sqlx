@@ -1,0 +1,13 @@
+config {
+  type: "table",
+  database: "automated-predictive-pipeline",
+  schema: "published_dataset",
+  name: "features_weights",
+  description: "Model feature weights, showing features influence",
+  dependencies: ["revenue_forecast_model"],
+  tags: ["ml:evaluate"]
+}
+
+SELECT * 
+FROM ML.WEIGHTS(MODEL `${database()}.${schema()}.revenue_forecast`)
+ORDER BY ABS(weight) DESC

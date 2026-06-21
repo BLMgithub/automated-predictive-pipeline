@@ -15,7 +15,7 @@ WITH market_agg AS (
     canonical_traffic_source,
     target_category,
     COUNT(DISTINCT campaign_id) AS total_campaign,
-    SUM(spend_usd) AS total_spend
+    SUM(spend_usd) AS total_spend,
   FROM ${ref("marketing_data")}
   GROUP BY 1, 2, 3
 ),
@@ -28,7 +28,9 @@ core_agg AS (
     SUM(itm.sale_price) AS total_revenue,
     COUNT(DISTINCT ord.order_id) total_orders,
     COUNT(CASE WHEN LOWER(itm.status) = "returned" THEN 1 END) AS total_returned,
-    AVG(DATE_DIFF(DATE(itm.shipped_at), DATE(itm.created_at), DAY)) AS avg_fulfillment_days
+    AVG(DATE_DIFF(DATE(itm.shipped_at), DATE(itm.created_at), DAY)) AS avg_fulfillment_days,
+    AVG(ord.num_of_item) AS avg_items_per_order,
+    AVG(itm.sale_price - prd.cost) AS avg_margin_per_item,
   FROM ${ref("raw_order_items")} AS itm
   INNER JOIN ${ref("raw_orders")} AS ord
     ON itm.order_id = ord.order_id
@@ -40,23 +42,21 @@ core_agg AS (
 )
 
 SELECT
-    DATE_TRUNC(src.event_date, WEEK(MONDAY)) AS week_start,
-    mkt.canonical_traffic_source AS traffic_source,
-    src.product_category,
-    SAFE_DIVIDE(SUM(src.total_revenue), SUM(mkt.total_campaign)) AS revenue_per_campaign,
-    SUM(mkt.total_campaign) AS total_campaign,
-    SUM(src.total_revenue) AS total_revenue,
-    SUM(mkt.total_spend) AS total_spend,
-    SUM(src.total_orders) AS total_orders,
-    SUM(src.total_returned) AS total_returned,
-    SUM(src.avg_fulfillment_days * src.total_orders) / NULLIF(SUM(src.total_orders), 0) avg_fulfillment_days,
-    LOGICAL_OR(cal.is_peak_date) AS is_peak_date,
-    LOGICAL_OR(cal.is_holiday_season) AS is_holiday_season
-    FROM core_agg AS src
-    INNER JOIN market_agg AS mkt
-    ON src.event_date = mkt.campaign_date
-        AND src.traffic_source = mkt.canonical_traffic_source
-        AND src.product_category = mkt.target_category
-    LEFT JOIN ${ref("ext_holiday_calendar")} AS cal
-    ON src.event_date = cal.date
+  DATE_TRUNC(src.event_date, WEEK(MONDAY)) AS week_start,
+  mkt.canonical_traffic_source AS traffic_source,
+  src.product_category,
+  SAFE_DIVIDE(SUM(src.total_revenue), SUM(mkt.total_campaign)) AS revenue_per_campaign,
+  SUM(mkt.total_campaign) AS total_campaign,
+  SUM(src.total_revenue) AS total_revenue,
+  SUM(mkt.total_spend) AS total_spend,
+  SUM(src.total_orders) AS total_orders,
+  SUM(src.total_returned) AS total_returned,
+  SUM(src.avg_fulfillment_days * src.total_orders) / NULLIF(SUM(src.total_orders), 0) AS avg_fulfillment_days,
+  SUM(src.avg_items_per_order * src.total_orders) / NULLIF(SUM(src.total_orders), 0) AS avg_items_per_order,
+  SUM(src.avg_margin_per_item * src.total_orders) / NULLIF(SUM(src.total_orders), 0) AS avg_margin_per_item
+FROM core_agg AS src
+INNER JOIN market_agg AS mkt
+  ON src.event_date = mkt.campaign_date
+    AND src.traffic_source = mkt.canonical_traffic_source
+    AND src.product_category = mkt.target_category
 GROUP BY 1, 2, 3

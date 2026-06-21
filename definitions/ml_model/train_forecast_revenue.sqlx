@@ -8,11 +8,18 @@ config {
   tags: ["ml:train"]
 }
 
-CREATE OR REPLACE MODEL `${database()}`.${schema()}.`revenue_forecast`
+CREATE OR REPLACE MODEL `${database()}.${schema()}.revenue_forecast`
 OPTIONS(
+  warm_start = false,
   model_type = 'LINEAR_REG',
   input_label_cols = ['next_week_revenue_per_campaign'],
-  data_split_method = 'AUTO_SPLIT'
+  data_split_method = 'NO_SPLIT',
+  l2_reg = 0.1,
+  L1_reg = 0.1,
+  MAX_ITERATIONS = 20,
+  EARLY_STOP = true,
+  MIN_REL_PROGRESS = 0.01,
+  LS_INIT_LEARN_RATE = 0.1
 ) AS
 SELECT * EXCEPT(week_start)
-FROM `automated-predictive-pipeline.published_dataset.ml_training_data`
+FROM `${database()}.${schema()}.ml_training_data`

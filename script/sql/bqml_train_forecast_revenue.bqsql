@@ -15,22 +15,38 @@
 
 CREATE OR REPLACE MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast` -- noqa
 OPTIONS (
+  warm_start = false,
   model_type = 'LINEAR_REG',
   input_label_cols = ['next_week_revenue_per_campaign'],
-  data_split_method = 'AUTO_SPLIT'
-  -- l2_reg = HPARAM_RANGE(0, 1),
-  -- num_trials = 5,
-  -- hparam_tuning_objectives = ['R2_SCORE']
-) AS
+  data_split_method = 'NO_SPLIT',
+  l2_reg = 0.1,
+  L1_reg = 0.1,
+  MAX_ITERATIONS = 20,
+  EARLY_STOP = true,
+  MIN_REL_PROGRESS = 0.01,
+  LS_INIT_LEARN_RATE = 0.1
+
+  -- hparam_tuning_objectives = ['R2_SCORE'],
+  -- l2_reg = HPARAM_RANGE(0, 10.0),
+  -- L1_reg = HPARAM_RANGE(0, 10.0),
+)
+AS
 SELECT * EXCEPT(week_start) -- noqa
 FROM `automated-predictive-pipeline.published_dataset.ml_training_data`;
+
+
+-- SELECT * -- noqa
+-- FROM ML.TRIAL_INFO( MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast`) -- noqa
 
 ---------------------------------------------------------------
 -- MODEL EVALUATION
 ---------------------------------------------------------------
 
 SELECT * -- noqa
-FROM ML.evaluate (MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast`); -- noqa
+FROM ML.evaluate (
+  MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast`,         -- noqa
+  (SELECT * FROM `automated-predictive-pipeline.published_dataset.ml_holdout_data`) -- noqa
+); -- noqa
 
 ---------------------------------------------------------------
 -- FEATURE WEIGHT IMPORTANCE
@@ -46,6 +62,6 @@ ORDER BY ABS(weight) DESC;
 
 SELECT *
 FROM ML.predict (
-  MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast`, --noqa
-  (SELECT * FROM `automated-predictive-pipeline.published_dataset.ml_holdout_data`) --noqa
+  MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast`,         --noqa
+  (SELECT * FROM `automated-predictive-pipeline.published_dataset.ml_weekly_data`) --noqa
 );

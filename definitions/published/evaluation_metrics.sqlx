@@ -1,0 +1,15 @@
+config {
+  type: "table",
+  database: "automated-predictive-pipeline",
+  schema: "published_dataset",
+  name: "evaluation_metrics",
+  description: "Model performance metrics on unseen data (evaluated on ml_holdout_data)",
+  dependencies: ["revenue_forecast_model"],
+  tags: ["ml:evaluate"]
+}
+
+SELECT *
+FROM ML.evaluate (
+  MODEL `${database()}.${schema()}.revenue_forecast`,
+  (SELECT * FROM `automated-predictive-pipeline.published_dataset.ml_holdout_data`)
+)

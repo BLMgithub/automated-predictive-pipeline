@@ -1,16 +1,16 @@
 config {
   type: "view",
-  database:"automated-predictive-pipeline",
+  database: "automated-predictive-pipeline",
   schema: "published_dataset",
-  name: "ml_holdout_data",
-  description: "Holdout dataset (2026 weeks, Excluding latest week) for model evaluation",
+  name: "ml_weekly_data",
+  description: "Most recent 2026 week for live weekly prediction",
   assertions: {
-    nonNull: ["traffic_source", "product_category", "next_week_revenue_per_campaign"]     
+    nonNull: ["week_start", "traffic_source", "product_category"]
   },
   tags: ["build_pipeline"]
 }
 
-WITH eval_features AS (
+WITH recent_week_features AS (
   SELECT
     week_start,
     traffic_source,
@@ -46,6 +46,10 @@ WITH eval_features AS (
   WHERE week_start >= '2026-01-01'
 )
 
-SELECT *
-FROM eval_features
-WHERE next_week_revenue_per_campaign IS NOT NULL
+SELECT * EXCEPT(next_week_revenue_per_campaign)
+FROM recent_week_features
+WHERE week_start = (
+  SELECT MAX(week_start)
+  FROM ${ref("ml_core_dataset")}
+  WHERE week_start >= '2026-01-01'
+)
