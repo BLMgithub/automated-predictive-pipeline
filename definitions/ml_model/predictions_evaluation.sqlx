@@ -11,22 +11,17 @@ config {
   tags: ["ml:evaluate"]
 }
 
-WITH prediction_eval_summary AS (
-  SELECT
-    *
-  FROM ML.PREDICT(
-    MODEL `${database()}.${schema()}.revenue_forecast`,
-    (SELECT * FROM ${ref("ml_holdout_data")})
-  ) as pred
- )
-
 SELECT
   week_start,
   traffic_source,
   product_category,
   SUM(predicted_next_week_revenue_per_campaign) AS prediction_next_week_revenue,
   SUM(next_week_revenue_per_campaign) AS actual_next_week_revenue,
-FROM prediction_eval_summary
+  SUM(next_week_revenue_per_campaign) - SUM(predicted_next_week_revenue_per_campaign) AS residuals
+FROM ML.PREDICT(
+  MODEL `${database()}.${schema()}.revenue_forecast`,
+  (SELECT * FROM ${ref("ml_holdout_data")})
+  )
 WHERE next_week_revenue_per_campaign iS NOT NULL
 GROUP BY 1, 2, 3
 ORDER BY 1
