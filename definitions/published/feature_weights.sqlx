@@ -13,7 +13,7 @@ WITH feature_weights AS (
     raw.processed_input,
     raw.weight AS raw_weight,
     raw.category_weights,
-    std.weight AS std_weight
+    std.weight AS standard_weight
   FROM ML.WEIGHTS(MODEL `${database()}.${schema()}.revenue_forecast`) AS raw
   INNER JOIN ML.WEIGHTS(MODEL `${database()}.${schema()}.revenue_forecast`,
     STRUCT(true AS standardize)) AS std
@@ -24,10 +24,10 @@ SELECT
   fw.processed_input AS feature,
   COALESCE(cw.category, 'numeric') AS category,
   COALESCE(cw.weight, fw.raw_weight) AS raw_weight,
-  fw.std_weight
+  fw.standard_weight
 FROM feature_weights AS fw
 LEFT JOIN UNNEST(fw.category_weights) cw
 ORDER BY
   CASE WHEN category = 'numeric' THEN 1 ELSE 2 END,
   CASE WHEN feature = 'traffic_source' THEN 1 ELSE 2 END,
-  ABS(fw.std_weight) DESC
+  ABS(fw.standard_weight) DESC
