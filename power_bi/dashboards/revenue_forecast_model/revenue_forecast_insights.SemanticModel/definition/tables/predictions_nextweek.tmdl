@@ -1,0 +1,70 @@
+table predictions_nextweek
+	lineageTag: 8f0b1167-7df7-49a8-8e57-e8e9dbb6aa18
+
+	column week_start
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 5427f53d-57d7-4994-a288-40eb15851e21
+		summarizeBy: none
+		sourceColumn: week_start
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column traffic_source
+		dataType: string
+		lineageTag: 22302e23-f274-4c9f-9fb1-8167732a1972
+		summarizeBy: none
+		sourceColumn: traffic_source
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category
+		dataType: string
+		lineageTag: d7bf8de4-f390-49b0-86a8-4009cc14cf86
+		summarizeBy: none
+		sourceColumn: product_category
+
+		annotation SummarizationSetBy = Automatic
+
+	column predicted_next_week_revenue
+		dataType: double
+		lineageTag: 2bd01972-5055-4f8f-a0aa-59c801083442
+		summarizeBy: sum
+		sourceColumn: predicted_next_week_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column expected_lower_bound
+		dataType: double
+		lineageTag: 9bb456e7-2b59-4101-932b-cfda1c995686
+		summarizeBy: sum
+		sourceColumn: expected_lower_bound
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column expected_upper_bound
+		dataType: double
+		lineageTag: 393c89ec-c5e5-43f8-8b3c-734e04321561
+		summarizeBy: sum
+		sourceColumn: expected_upper_bound
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition predictions_nextweek = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false, BillingProject="automated-predictive-pipeline"]){[Name="automated-predictive-pipeline"]}[Data], "SELECT * FROM `automated-predictive-pipeline.published_dataset.predictions_nextweek`", null, [EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

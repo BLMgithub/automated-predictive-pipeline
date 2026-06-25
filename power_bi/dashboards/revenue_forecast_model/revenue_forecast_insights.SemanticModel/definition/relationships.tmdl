@@ -1,0 +1,13 @@
+relationship 138ece75-2818-4929-bedd-321cbcf28656
+	joinOnDateBehavior: datePartOnly
+	fromColumn: pipeline_health.snapshot_timestamp
+	toColumn: LocalDateTable_cf251205-58e0-47f0-8219-c7a3679202d6.Date
+
+relationship 7e59189f-d1e1-a78d-1501-711b80458ed6
+	fromColumn: predictions_evaluation.week_start
+	toColumn: calendar_date.Date
+
+relationship a64b49c5-6650-334e-bc08-8dde57069f03
+	fromColumn: predictions_nextweek.week_start
+	toColumn: calendar_date.Date
+

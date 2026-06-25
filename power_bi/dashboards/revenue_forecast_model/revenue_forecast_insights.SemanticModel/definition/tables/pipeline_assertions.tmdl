@@ -1,0 +1,50 @@
+table pipeline_assertions
+	lineageTag: f1853d57-60c2-4e9b-b630-4f496fda70c2
+
+	column assertion_name
+		dataType: string
+		lineageTag: 4acf1138-1fc7-419a-994c-5c7181b177a0
+		summarizeBy: none
+		sourceColumn: assertion_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: c89b692d-0e36-426a-8917-6794cd366c8d
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column rows_flagged
+		dataType: int64
+		formatString: 0
+		lineageTag: 52fea4ad-41ee-40bf-8a03-98ca333b8d3b
+		summarizeBy: sum
+		sourceColumn: rows_flagged
+
+		annotation SummarizationSetBy = Automatic
+
+	column snapshot_timestamp
+		dataType: string
+		lineageTag: 1a9049ed-30f8-4d17-b844-02843740a81c
+		summarizeBy: none
+		sourceColumn: snapshot_timestamp
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	partition pipeline_assertions = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false, BillingProject="automated-predictive-pipeline"]){[Name="automated-predictive-pipeline"]}[Data], "SELECT * FROM `automated-predictive-pipeline.published_dataset.pipeline_assertions`", null, [EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

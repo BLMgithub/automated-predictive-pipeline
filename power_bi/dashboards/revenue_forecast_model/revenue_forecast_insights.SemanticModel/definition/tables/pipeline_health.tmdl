@@ -1,0 +1,91 @@
+table pipeline_health
+	lineageTag: 59a40046-75b8-4f39-8b61-1e0852a32f0f
+
+	column pipeline_name
+		dataType: string
+		lineageTag: 530d133b-0167-41bd-9681-5c8e26fcad8b
+		summarizeBy: none
+		sourceColumn: pipeline_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column snapshot_timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 318a7690-1698-457f-8979-4bbcdc2506e3
+		summarizeBy: none
+		sourceColumn: snapshot_timestamp
+
+		variation Variation
+			isDefault
+			relationship: 138ece75-2818-4929-bedd-321cbcf28656
+			defaultHierarchy: LocalDateTable_cf251205-58e0-47f0-8219-c7a3679202d6.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column raw_source_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 73e2244c-9f92-45b5-bcec-42600ef1d719
+		summarizeBy: sum
+		sourceColumn: raw_source_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column contract_output_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 32580f22-f677-429b-b5ce-fca58df864d4
+		summarizeBy: sum
+		sourceColumn: contract_output_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column data_loss_percentage
+		dataType: double
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: ad3ea932-76a3-4f44-bcd1-d97338c37bae
+		summarizeBy: sum
+		sourceColumn: data_loss_percentage
+
+		annotation SummarizationSetBy = Automatic
+
+	column rejected_negative_spend
+		dataType: int64
+		formatString: 0
+		lineageTag: 9a91d85e-d115-4342-b2f2-f5ed5518afab
+		summarizeBy: sum
+		sourceColumn: rejected_negative_spend
+
+		annotation SummarizationSetBy = Automatic
+
+	column rejected_unparseable_dates
+		dataType: int64
+		formatString: 0
+		lineageTag: bae335d3-bc91-42b9-ad67-151910fd18cf
+		summarizeBy: sum
+		sourceColumn: rejected_unparseable_dates
+
+		annotation SummarizationSetBy = Automatic
+
+	column rejected_unmapped_source
+		dataType: int64
+		formatString: 0
+		lineageTag: 71d509e3-1a93-4af6-8cf4-8091b31bc284
+		summarizeBy: sum
+		sourceColumn: rejected_unmapped_source
+
+		annotation SummarizationSetBy = Automatic
+
+	partition pipeline_health = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false, BillingProject="automated-predictive-pipeline"]){[Name="automated-predictive-pipeline"]}[Data], "SELECT * FROM `automated-predictive-pipeline.published_dataset.pipeline_health`", null, [EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

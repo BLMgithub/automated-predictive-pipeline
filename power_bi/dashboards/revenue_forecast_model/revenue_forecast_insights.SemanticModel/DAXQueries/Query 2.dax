@@ -1,0 +1,2 @@
+EVALUATE
+ROW("min_residuals", MIN(predictions_evaluation[residuals]), "avg_residuals", AVERAGE(predictions_evaluation[residuals]), "max_residuals", MAX(predictions_evaluation[residuals]))

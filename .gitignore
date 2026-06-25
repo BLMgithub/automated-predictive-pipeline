@@ -26,6 +26,15 @@ override.tf.json
 
 *tfplan*
 
+# Power BI Cache and temporary files
+**/.pbi/
+**/cache.abf
+**/localSettings.json
+*.tmp
+*.log
+*.copy
+ms-pbi.user.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

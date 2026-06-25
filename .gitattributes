@@ -1,2 +1,5 @@
 *.bqsql   linguist-language=SQL linguist-detectable
 *.sqlx    linguist-language=SQL linguist-detectable
+
+# Power BI LFS
+*.pbix filter=lfs diff=lfs merge=lfs -text
