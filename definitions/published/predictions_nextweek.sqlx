@@ -3,7 +3,7 @@ config {
   database: "automated-predictive-pipeline",
   schema: "published_dataset",
   name: "predictions_nextweek",
-  description: "Live weekly model predictions",
+  description: "Live weekly model predictions, clamps negative lower bound to 0",
   dependencies: ["revenue_forecast_model"],
   assertions: {
     nonNull: ["week_start", "traffic_source", "product_category", "predicted_next_week_revenue"]
@@ -11,33 +11,33 @@ config {
   tags: ["ml:predict"]
 }
 
-WITH next_week_prediction AS (
+WITH pred_with_residual AS (
   SELECT
+    APPROX_QUANTILES(residuals, 100)[OFFSET(2)]   AS q_lower,
+    APPROX_QUANTILES(residuals, 100)[OFFSET(97)]  AS q_upper
+  FROM `${database()}.${schema()}.predictions_evaluation`
+),
+
+next_week_prediction AS (
+  SELECT 
     week_start,
     traffic_source,
     product_category,
-    total_campaign,
-    total_orders,
-    total_returned,
-    avg_margin_per_item,
-    avg_items_per_order,
-    avg_fulfillment_days,
-    spend_momentum,
-    revenue_momentum,
-    fulfillment_prev_wk,
-    predicted_next_week_revenue_per_campaign,
+    SUM(predicted_next_week_revenue_per_campaign) AS predicted_next_week_revenue
   FROM ML.PREDICT(
-    MODEL `automated-predictive-pipeline.published_dataset.revenue_forecast`,
+    MODEL `${database()}.${schema()}.revenue_forecast`,
     (SELECT * FROM ${ref("ml_weekly_data")})
   )
+  GROUP BY 1, 2, 3
 )
 
+-- NOTE: negative lower bounds are clamp to 0, model suffer from negative extrapolation  
 SELECT
-  week_start,
-  traffic_source,
+  week_start, 
+  traffic_source, 
   product_category,
-  SUM(predicted_next_week_revenue_per_campaign) AS predicted_next_week_revenue
+  ROUND(GREATEST(predicted_next_week_revenue, 0), 2) AS predicted_next_week_revenue,
+  ROUND(GREATEST(predicted_next_week_revenue + res.q_lower, 0), 2) AS expected_lower_bound,
+  ROUND(predicted_next_week_revenue + res.q_upper, 2) AS expected_upper_bound 
 FROM next_week_prediction
-GROUP BY 1, 2, 3
-ORDER BY 1
-
+CROSS JOIN `pred_with_residual` res

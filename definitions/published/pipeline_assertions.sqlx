@@ -1,0 +1,62 @@
+config {
+  type: "table",
+  database: "automated-predictive-pipeline",
+  schema: "published_dataset",
+  name: "pipeline_assertions",
+  description: "Consolidated pipeline assertions status",
+  tags: ["build_pipeline"]
+}
+
+SELECT 'marketing_data_row_conditions' AS assertion_name,
+  CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'FAIL' END AS status,
+  COUNT(*) AS rows_flagged,
+  CURRENT_TIMESTAMP() AS snapshot_timestamp
+FROM `${database()}.dataform_assertions.contracted_dataset_marketing_data_assertions_rowConditions`
+
+UNION ALL
+
+SELECT 'ml_core_dataset_row_conditions',
+  CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'FAIL' END,
+  COUNT(*),
+  CURRENT_TIMESTAMP()
+FROM `${database()}.dataform_assertions.contracted_dataset_ml_core_dataset_assertions_rowConditions`
+
+UNION ALL
+
+SELECT 'ml_holdout_data_row_conditions',
+  CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'FAIL' END,
+  COUNT(*),
+  CURRENT_TIMESTAMP()
+FROM `${database()}.dataform_assertions.published_dataset_ml_holdout_data_assertions_rowConditions`
+
+UNION ALL
+
+SELECT 'ml_training_data_row_conditions',
+  CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'FAIL' END,
+  COUNT(*),
+  CURRENT_TIMESTAMP()
+FROM `${database()}.dataform_assertions.published_dataset_ml_training_data_assertions_rowConditions`
+
+UNION ALL
+
+SELECT 'ml_weekly_data_row_conditions',
+  CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'FAIL' END,
+  COUNT(*),
+  CURRENT_TIMESTAMP()
+FROM `${database()}.dataform_assertions.published_dataset_ml_weekly_data_assertions_rowConditions`
+
+UNION ALL
+
+SELECT 'pipeline_health_row_conditions',
+  CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'FAIL' END,
+  COUNT(*),
+  CURRENT_TIMESTAMP()
+FROM `${database()}.dataform_assertions.published_dataset_pipeline_health_assertions_rowConditions`
+
+UNION ALL
+
+SELECT 'revenue_forecast_row_conditions',
+  CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'FAIL' END,
+  COUNT(*),
+  CURRENT_TIMESTAMP()
+FROM `${database()}.dataform_assertions.published_dataset_predictions_nextweek_assertions_rowConditions`

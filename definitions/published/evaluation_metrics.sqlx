@@ -8,7 +8,11 @@ config {
   tags: ["ml:evaluate"]
 }
 
-SELECT *
+SELECT 
+  SQRT(mean_squared_error) AS root_mean_squared_error,
+  mean_absolute_error,
+  median_absolute_error,
+  r2_score,
 FROM ML.evaluate (
   MODEL `${database()}.${schema()}.revenue_forecast`,
   (SELECT * FROM `automated-predictive-pipeline.published_dataset.ml_holdout_data`)

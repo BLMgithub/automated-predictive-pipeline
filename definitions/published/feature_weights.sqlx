@@ -3,11 +3,31 @@ config {
   database: "automated-predictive-pipeline",
   schema: "published_dataset",
   name: "features_weights",
-  description: "Model feature weights, showing features influence",
+  description: "Model feature weights, showing features influence and magnitude",
   dependencies: ["revenue_forecast_model"],
   tags: ["ml:evaluate"]
 }
 
-SELECT * 
-FROM ML.WEIGHTS(MODEL `${database()}.${schema()}.revenue_forecast`)
-ORDER BY ABS(weight) DESC
+WITH feature_weights AS (
+  SELECT
+    raw.processed_input,
+    raw.weight AS raw_weight,
+    raw.category_weights,
+    std.weight AS standard_weight
+  FROM ML.WEIGHTS(MODEL `${database()}.${schema()}.revenue_forecast`) AS raw
+  INNER JOIN ML.WEIGHTS(MODEL `${database()}.${schema()}.revenue_forecast`,
+    STRUCT(true AS standardize)) AS std
+  ON raw.processed_input = std.processed_input
+)
+
+SELECT
+  fw.processed_input AS feature,
+  COALESCE(cw.category, 'numeric') AS category,
+  COALESCE(cw.weight, fw.raw_weight) AS raw_weight,
+  fw.standard_weight
+FROM feature_weights AS fw
+LEFT JOIN UNNEST(fw.category_weights) cw
+ORDER BY
+  CASE WHEN category = 'numeric' THEN 1 ELSE 2 END,
+  CASE WHEN feature = 'traffic_source' THEN 1 ELSE 2 END,
+  ABS(fw.standard_weight) DESC
