@@ -1,0 +1,132 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "991edb490d935450c483",
+  "position": {
+    "x": 77.341435976039932,
+    "y": 419.141908373215,
+    "z": 2000,
+    "height": 268.31072749691742,
+    "width": 691.29469790382245,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "predictions_evaluation"
+                    }
+                  },
+                  "Property": "residuals (bins)"
+                }
+              },
+              "queryRef": "predictions_evaluation.residuals (bins)",
+              "nativeQueryRef": "Residuals Bin ($)",
+              "active": true,
+              "displayName": "Residuals Bin ($)"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "predictions_evaluation"
+                        }
+                      },
+                      "Property": "residuals"
+                    }
+                  },
+                  "Function": 5
+                }
+              },
+              "queryRef": "Sum(predictions_evaluation.residuals)",
+              "nativeQueryRef": "Count of residuals"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "predictions_evaluation"
+                  }
+                },
+                "Property": "residuals (bins)"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Prediction Residuals Histrogram'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "acec95f7e7929ee86458",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "predictions_evaluation"
+              }
+            },
+            "Property": "residuals (bins)"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "da0d5de73d4c807419cb",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "predictions_evaluation"
+                  }
+                },
+                "Property": "residuals"
+              }
+            },
+            "Function": 5
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

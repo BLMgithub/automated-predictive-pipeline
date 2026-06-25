@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "revenue_forecast_insights"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "51d55e0d-4d54-428e-bf29-87fd6b707f27"
+  }
+}
