@@ -1,0 +1,271 @@
+table calculations
+	lineageTag: 3d8da6de-16ad-459e-bb82-a563865587cb
+
+	measure actual_next_week = SUM(predictions_evaluation[actual_next_week_revenue])
+		displayFolder: pred_evaluation
+		lineageTag: 52f47493-6e4f-4eb9-a5e8-22f270262757
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure pred_next_week = SUM(predictions_evaluation[prediction_next_week_revenue])
+		displayFolder: pred_evaluation
+		lineageTag: fe8e7bf5-219f-4410-bae1-5ba189f07585
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure model_residuals = SUM(predictions_evaluation[residuals])
+		displayFolder: pred_evaluation
+		lineageTag: 2e5a6d72-637f-43bb-8539-9880e14a36c3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure viz_data_loss = 0.1 - VALUES(pipeline_health[data_loss_percentage])
+		displayFolder: visualizations
+		lineageTag: 3d1040d9-75be-4160-9c91-02b3f58545bb
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure abs_std_weight = ```
+			
+			SUMX(
+			    KEEPFILTERS(features_weights), 
+			    ABS(features_weights[standard_weight])
+			)
+			```
+		displayFolder: revenue_drivers
+		lineageTag: dd1039b7-e65d-4fc9-830a-2d109c328dd5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure numeric_weights = ```
+			
+			    CALCULATE(
+			        SUMX(features_weights, (features_weights[raw_weight])),
+			        features_weights[category] = "numeric"
+			    )
+			```
+		displayFolder: revenue_drivers
+		lineageTag: dfc0c0f8-429f-47e2-a63b-94c8a12e0e2e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure feature_rank =
+			
+			IF(
+			    ISINSCOPE(features_weights[feature]),
+			    RANKX(
+			        ALLSELECTED(features_weights[feature]),
+			        [abs_std_weight],
+			        ,
+			        DESC,
+			        Dense
+			    ),
+			    BLANK()
+			)
+		formatString: 0
+		displayFolder: revenue_drivers
+		lineageTag: 1d2e78b4-b88d-468f-9156-d9e9087dd70d
+
+	measure traffic_source_numeric_weight = ```
+			
+			    CALCULATE(
+			        SUMX(
+			            features_weights,
+			            (features_weights[raw_weight])
+			        ),
+			        features_weights[feature] = "traffic_source"
+			        )
+			        
+			```
+		displayFolder: revenue_drivers
+		lineageTag: 005d7411-18b3-4403-91ba-4aad24b51ae0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure product_category_numeric_weight = ```
+			
+			    CALCULATE(
+			        SUMX(
+			            features_weights,
+			            (features_weights[raw_weight])
+			        ),
+			        features_weights[feature] = "product_category"
+			        )
+			        
+			```
+		displayFolder: revenue_drivers
+		lineageTag: 96adc9e7-ec65-4867-9163-3650ea4ed640
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure viz_product_category =
+			
+			IF(
+			    [product_category_numeric_weight] > 0,
+			    CONCATENATE("+",ROUND([product_category_numeric_weight], 2)),
+			    [product_category_numeric_weight]
+			)
+		displayFolder: visualizations
+		lineageTag: 026da725-7439-4af2-a114-635bb44760a8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure feature_weights_beta_weight = ```
+			
+			    CONCATENATE("β = ", 
+			        ROUND(
+			            SUMX(features_weights, (features_weights[standard_weight])),
+			            2
+			        )
+			    )
+			```
+		displayFolder: visualizations
+		lineageTag: 154998a4-b80a-4aab-8eac-bc78cdc616f5
+
+	measure viz_traffic_source =
+			
+			IF(
+			    [traffic_source_numeric_weight] > 0,
+			    CONCATENATE("+",ROUND([traffic_source_numeric_weight], 2)),
+			    [traffic_source_numeric_weight]
+			)
+		displayFolder: visualizations
+		lineageTag: 13bb04e3-9188-4b0c-964d-d5729dbf1482
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure pred_nextweek = SUM(predictions_nextweek[predicted_next_week_revenue])
+		formatString: #,0.00
+		displayFolder: live_prediction
+		lineageTag: d401fd30-5d90-4024-9ca1-0d666eed2864
+
+	measure pred_nextweek_lowerbound = SUM(predictions_nextweek[expected_lower_bound])
+		formatString: #,0.00
+		displayFolder: live_prediction
+		lineageTag: c49c78a4-4829-4816-bac7-0d25ceca2b32
+
+	measure pred_nextweek_upperbound = SUM(predictions_nextweek[expected_upper_bound])
+		formatString: #,0.00
+		displayFolder: live_prediction
+		lineageTag: 4944b3cb-2c91-4bd4-a997-4c7f4562e10f
+
+	measure impact_direction = IF(SELECTEDVALUE(features_weights[raw_weight]) >= 0, "increases by $", "decreases by $")
+		displayFolder: tooltip_numeric_weights
+		lineageTag: a56aeaa3-260d-4766-89ab-b5224bddc52e
+
+	measure delta_label = ```
+			
+			SWITCH(
+			    SELECTEDVALUE(features_weights[feature]),
+			    "return_rate_prev_wk",     "1 percentage point increase in return rate (0.01)",
+			    "revenue_momentum",        "10% revenue momentum increase (ratio +0.1)",
+			    "spend_momentum",          "10% spend momentum increase (ratio +0.1)",
+			    "avg_fulfillment_days",    "1 additional fulfillment day",
+			    "avg_items_per_order",     "1 additional item per order",
+			    "avg_margin_per_item",     "$1 additional margin per item",
+			    "revenue_per_campaign",    "$1 additional revenue per campaign",
+			    "total_campaign",          "1 additional campaign",
+			    "total_orders",            "1 additional order",
+			    "total_orders_prev_wk",    "1 additional order last week",
+			    "total_returned",          "1 additional return",
+			    "1 unit"
+			)
+			
+			```
+		displayFolder: tooltip_numeric_weights
+		lineageTag: c35ded19-bf92-499f-a88d-9c73a3e8a1ee
+
+	measure context_effect = SELECTEDVALUE(features_weights[raw_weight]) * [delta]
+		displayFolder: tooltip_numeric_weights
+		lineageTag: af8f5c03-9d15-433a-b002-54d76ebea34a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure delta =
+			
+			// Increase in respective units
+			SWITCH(
+			    SELECTEDVALUE(features_weights[feature]),
+			    "return_rate_prev_wk",     0.01,
+			    "revenue_momentum",        0.1,
+			    "spend_momentum",          0.1,
+			    "avg_fulfillment_days",    1,
+			    "avg_items_per_order",     1,
+			    "avg_margin_per_item",     1,
+			    "revenue_per_campaign",    1,
+			    "total_campaign",          1,
+			    "total_orders",            1,
+			    "total_orders_prev_wk",    1,
+			    "total_returned",          1,
+			    1
+			)
+		displayFolder: tooltip_numeric_weights
+		lineageTag: 01e7c14f-063d-451b-971c-6ea76aa14490
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure raw_weight = SELECTEDVALUE(features_weights[raw_weight])
+		displayFolder: tooltip_numeric_weights
+		lineageTag: f4a36292-5116-4147-a097-88789776c8ed
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure standardized_weight = SELECTEDVALUE(features_weights[standard_weight])
+		displayFolder: tooltip_numeric_weights
+		lineageTag: 4e1b4085-fb76-4afd-ab5b-a1560b71d403
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure traffic_source_label = SELECTEDVALUE(features_weights[category])
+		displayFolder: tooltip_categorical_weights
+		lineageTag: 0bc41b54-4acb-476e-a58c-1c73145f7707
+
+	measure product_category_label = SELECTEDVALUE(features_weights[category])
+		displayFolder: tooltip_categorical_weights
+		lineageTag: b2e7768b-af27-4447-80e5-899b753a883a
+
+	measure source_freshness_datetime = ```
+			
+			    FORMAT(SELECTEDVALUE(model_output_freshness[last_modified_time]), "YYYY/MM/DD HH:MM:SS AM/PM")
+			```
+		displayFolder: visualizations
+		lineageTag: ededafbf-8174-49b7-9912-7c0c21883d8d
+
+	measure eval_prediction_error =
+			
+			DIVIDE([model_residuals], [actual_next_week], BLANK())
+		displayFolder: tooltip_model_confidence
+		lineageTag: 198d107f-17d4-4a36-aea2-8fb83717faac
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure selected_date = FORMAT(SELECTEDVALUE(calendar_date[Week Start Date]), "MMMM - DD")
+		displayFolder: tooltip_model_confidence
+		lineageTag: 993c058f-ac27-4f49-89c9-52303940875e
+
+	measure selected_bin_size = ```
+			SELECTEDVALUE(predictions_evaluation[residuals (bins)]) 
+			```
+		displayFolder: tooltip_model_confidence
+		lineageTag: b215b937-84cd-42d6-9d3a-267ad7788227
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure residual_bin_count = COUNT(predictions_evaluation[residuals])
+		formatString: 0
+		displayFolder: tooltip_model_confidence
+		lineageTag: a9e54d8b-2ded-4e2d-a076-31d485184b62
+
+	partition calculations = m
+		mode: import
+		source =
+				let
+				  Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Removed Columns" = Table.RemoveColumns(Source,{"Column1"})
+				in
+				  #"Removed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

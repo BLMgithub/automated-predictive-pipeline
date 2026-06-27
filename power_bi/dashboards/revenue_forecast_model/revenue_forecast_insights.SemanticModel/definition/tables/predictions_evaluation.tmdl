@@ -1,0 +1,115 @@
+table predictions_evaluation
+	lineageTag: 5e86a28c-b2d1-450a-8962-7ee6586d3187
+
+	column week_start
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 43d005b4-e68d-4888-9553-789de86d64c3
+		summarizeBy: none
+		sourceColumn: week_start
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column traffic_source
+		dataType: string
+		lineageTag: 4397e5eb-3b7f-494a-af73-67e677385af8
+		summarizeBy: none
+		sourceColumn: traffic_source
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category
+		dataType: string
+		lineageTag: fe11ae0b-eb75-4968-be01-aa50630fc76b
+		summarizeBy: none
+		sourceColumn: product_category
+
+		annotation SummarizationSetBy = Automatic
+
+	column prediction_next_week_revenue
+		dataType: double
+		lineageTag: 3f74c375-9c36-4855-9700-7bb126fb3f0c
+		summarizeBy: sum
+		sourceColumn: prediction_next_week_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column actual_next_week_revenue
+		dataType: double
+		lineageTag: ed1b825e-3454-4d01-b1df-92a3af14cd9b
+		summarizeBy: sum
+		sourceColumn: actual_next_week_revenue
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column residuals
+		dataType: double
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: acb492df-460d-41dd-b460-bbd92365292e
+		summarizeBy: sum
+		sourceColumn: residuals
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"predictions_evaluation","TableItemName":"residuals (bins)","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column 'residuals (bins)' =
+			IF(
+				ISBLANK('predictions_evaluation'[residuals]),
+				BLANK(),
+				IF(
+					'predictions_evaluation'[residuals] >= 0,
+					ROUNDDOWN('predictions_evaluation'[residuals] / 100, 0) * 100,
+					ROUNDUP('predictions_evaluation'[residuals] / 100, 0) * 100
+				)
+			)
+		lineageTag: 63decb3b-074c-4ad9-adfb-74ca990267e5
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "predictions_evaluation"
+				          }
+				        },
+				        "Property": "residuals"
+				      }
+				    }
+				  ],
+				  "binningMetadata": {
+				    "binSize": {
+				      "value": 100.0,
+				      "unit": 0
+				    }
+				  }
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"p","Entity":"predictions_evaluation"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"p"}},"Property":"residuals"}}],"BinItem":{"Expression":{"Floor":{"Expression":{"Column":{"Expression":{"SourceRef":{"Source":"p"}},"Property":"residuals"}},"Size":100.0}}}}
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition predictions_evaluation = m
+		mode: import
+		source =
+				let
+				  Source = Value.NativeQuery(GoogleBigQuery.Database([UseStorageApi=false, BillingProject="automated-predictive-pipeline", Implementation="2.0"]){[Name="automated-predictive-pipeline"]}[Data], "SELECT * FROM `automated-predictive-pipeline.published_dataset.predictions_evaluation`", null, [EnableFolding=true])
+				in
+				  Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

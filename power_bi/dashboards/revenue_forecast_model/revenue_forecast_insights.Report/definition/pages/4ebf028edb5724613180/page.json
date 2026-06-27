@@ -1,0 +1,82 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "4ebf028edb5724613180",
+  "displayName": "Revenue Drivers",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "image": {
+            "image": {
+              "name": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Revenue Drivers Page.svg'"
+                  }
+                }
+              },
+              "url": {
+                "expr": {
+                  "ResourcePackageItem": {
+                    "PackageName": "RegisteredResources",
+                    "PackageType": 1,
+                    "ItemName": "Revenue_Drivers_Page6454866180308625.svg"
+                  }
+                }
+              },
+              "scaling": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Fit'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "835655167efb6acf8b63",
+      "target": "79aa3a4926fb7f74a4ed",
+      "type": "NoFilter"
+    },
+    {
+      "source": "835655167efb6acf8b63",
+      "target": "75379024382cd0f8fb6a",
+      "type": "NoFilter"
+    },
+    {
+      "source": "79aa3a4926fb7f74a4ed",
+      "target": "835655167efb6acf8b63",
+      "type": "NoFilter"
+    },
+    {
+      "source": "79aa3a4926fb7f74a4ed",
+      "target": "75379024382cd0f8fb6a",
+      "type": "NoFilter"
+    },
+    {
+      "source": "75379024382cd0f8fb6a",
+      "target": "79aa3a4926fb7f74a4ed",
+      "type": "NoFilter"
+    },
+    {
+      "source": "75379024382cd0f8fb6a",
+      "target": "835655167efb6acf8b63",
+      "type": "NoFilter"
+    }
+  ]
+}

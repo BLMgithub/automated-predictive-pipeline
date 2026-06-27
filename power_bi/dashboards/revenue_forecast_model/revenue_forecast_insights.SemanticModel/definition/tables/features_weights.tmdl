@@ -1,0 +1,51 @@
+table features_weights
+	lineageTag: 62d94ac7-bcd9-4859-a863-f4ebf00077f1
+
+	column feature
+		dataType: string
+		lineageTag: 8dcf6aee-3fef-4021-b5bd-4732361b6abe
+		summarizeBy: none
+		sourceColumn: feature
+
+		annotation SummarizationSetBy = Automatic
+
+	column category
+		dataType: string
+		lineageTag: 1ad08bb6-8ccc-41d5-b85f-4a19bc3b4c24
+		summarizeBy: none
+		sourceColumn: category
+
+		annotation SummarizationSetBy = Automatic
+
+	column raw_weight
+		dataType: double
+		lineageTag: e5a7bdbd-4287-48df-a4b9-a822555fa22a
+		summarizeBy: sum
+		sourceColumn: raw_weight
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column standard_weight
+		dataType: double
+		lineageTag: 52fff63a-d9e1-41ad-a095-f14f189b424e
+		summarizeBy: sum
+		sourceColumn: standard_weight
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition features_weights = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false, BillingProject="automated-predictive-pipeline"]){[Name="automated-predictive-pipeline"]}[Data], "SELECT #(lf)category,#(lf)feature,#(lf)raw_weight,#(lf)standard_weight,#(lf)FROM `automated-predictive-pipeline.published_dataset.features_weights`", null, [EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

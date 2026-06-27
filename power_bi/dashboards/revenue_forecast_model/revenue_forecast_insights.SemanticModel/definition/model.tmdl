@@ -1,0 +1,29 @@
+model Model
+	culture: en-PH
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
+
+annotation PBI_QueryOrder = ["predictions_nextweek","predictions_evaluation","pipeline_health","model_metrics","features_weights","calendar_date","calculations","pipeline_assertions","model_output_freshness"]
+
+ref table predictions_nextweek
+ref table DateTableTemplate_2bf31971-9a31-44e1-b6e4-2d26d42d533d
+ref table pipeline_health
+ref table LocalDateTable_cf251205-58e0-47f0-8219-c7a3679202d6
+ref table model_metrics
+ref table features_weights
+ref table predictions_evaluation
+ref table calendar_date
+ref table calculations
+ref table pipeline_assertions
+ref table model_output_freshness
+ref table LocalDateTable_80bfe36f-a704-4b3a-8ec5-724dc9997043
+
+ref cultureInfo en-PH
+

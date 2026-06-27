@@ -1,0 +1,49 @@
+table model_output_freshness
+	lineageTag: 1b29608f-8656-4534-be96-85a5c88fbe82
+
+	column table_id
+		dataType: string
+		lineageTag: 2f6603b5-d0a3-4209-9b11-4d168e686cce
+		summarizeBy: none
+		sourceColumn: table_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_modified_time
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: c59d7674-33d8-402d-93d1-3a0df2ac76b7
+		summarizeBy: none
+		sourceColumn: last_modified_time
+
+		variation Variation
+			isDefault
+			relationship: e97c7ab4-0ea0-424d-b443-3f0b95bd12c8
+			defaultHierarchy: LocalDateTable_80bfe36f-a704-4b3a-8ec5-724dc9997043.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column table_source =
+			
+			SWITCH(
+			    TRUE(),
+			     model_output_freshness[table_id] = "evaluation_metrics", "Model Train and Evaluation",
+			     model_output_freshness[table_id] = "predictions_nextweek", "Model Prediction"
+			)
+		lineageTag: 0ccc1cc4-ebc7-47b7-b004-13d5cbab988b
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition model_output_freshness = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false, BillingProject="automated-predictive-pipeline"]){[Name="automated-predictive-pipeline"]}[Data], "SELECT #(lf)  table_id,#(lf)  TIMESTAMP_MILLIS(last_modified_time) AS last_modified_time#(lf)FROM `automated-predictive-pipeline.published_dataset.__TABLES__`#(lf)WHERE table_id = 'evaluation_metrics'#(lf)#(lf)UNION ALL#(lf)#(lf)SELECT #(lf)  table_id,#(lf)  TIMESTAMP_MILLIS(last_modified_time) AS last_modified_time#(lf)FROM `automated-predictive-pipeline.published_dataset.__TABLES__`#(lf)WHERE table_id = 'predictions_nextweek'", null, [EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

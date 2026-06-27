@@ -1,0 +1,55 @@
+table model_metrics
+	lineageTag: 16850717-d4e5-4131-a65b-d2556c0183e7
+
+	column root_mean_squared_error
+		dataType: double
+		lineageTag: c3c9991b-392f-4efd-ae55-ff9c9461e9df
+		summarizeBy: sum
+		sourceColumn: root_mean_squared_error
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column mean_absolute_error
+		dataType: double
+		lineageTag: cbbc256a-345d-4a50-ace0-c1475e0e0914
+		summarizeBy: sum
+		sourceColumn: mean_absolute_error
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column median_absolute_error
+		dataType: double
+		lineageTag: 940a6944-7bdd-474a-8143-1ef420f6bd48
+		summarizeBy: sum
+		sourceColumn: median_absolute_error
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column r2_score
+		dataType: double
+		lineageTag: 88339806-cf9c-45f5-96c7-fa2118a445f2
+		summarizeBy: sum
+		sourceColumn: r2_score
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition model_metrics = m
+		mode: import
+		source =
+				let
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false, BillingProject="automated-predictive-pipeline"]){[Name="automated-predictive-pipeline"]}[Data], "SELECT * FROM `automated-predictive-pipeline.published_dataset.evaluation_metrics`", null, [EnableFolding=true])
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

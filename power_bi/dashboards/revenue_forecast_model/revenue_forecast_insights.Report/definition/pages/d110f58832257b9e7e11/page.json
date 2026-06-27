@@ -1,0 +1,10 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "d110f58832257b9e7e11",
+  "displayName": "Tooltip-Residual Histogram",
+  "displayOption": "ActualSize",
+  "height": 100,
+  "width": 195,
+  "visibility": "HiddenInViewMode",
+  "type": "Tooltip"
+}
