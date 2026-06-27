@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
   "name": "9176371509b7c8846e9e",
   "position": {
-    "x": 791.5214606369525,
-    "y": 127.9458541192076,
-    "z": 4000,
-    "height": 167.29963008631321,
-    "width": 413.51418002466096,
-    "tabOrder": 4000
+    "x": 850.11912758574454,
+    "y": 159.74463918300992,
+    "z": 1000,
+    "height": 123.49809885931559,
+    "width": 413.68821292775664,
+    "tabOrder": 6000
   },
   "visual": {
     "visualType": "barChart",
@@ -105,6 +105,13 @@
                   "Value": "false"
                 }
               }
+            },
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -195,6 +202,27 @@
             }
           }
         }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 0,
+                      "Percent": -0.2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "calculations.viz_data_loss"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -205,6 +233,13 @@
               "expr": {
                 "Literal": {
                   "Value": "'External Data Processing Loss Percentage'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
@@ -233,42 +268,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "531cb7266c721ad1e594",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "pipeline_health"
-                  }
-                },
-                "Property": "data_loss_percentage"
-              }
-            },
-            "Function": 0
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "12e9b9d4303d01b00888",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "calculations"
-              }
-            },
-            "Property": "viz_data_loss"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

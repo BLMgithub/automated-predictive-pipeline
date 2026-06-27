@@ -4,9 +4,10 @@
   "position": {
     "x": 0,
     "y": 0,
-    "z": 5000,
+    "z": 0,
     "height": 131.78791615289768,
-    "width": 413.51418002466096
+    "width": 413.51418002466096,
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -221,66 +222,5 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "parentGroupName": "0a4255576997764dd08b",
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "2719ce0b16410dd2223d",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "pipeline_health"
-                  }
-                },
-                "Property": "rejected_unparseable_dates"
-              }
-            },
-            "Function": 0
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "c20c6182894e57442017",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "pipeline_health"
-                  }
-                },
-                "Property": "rejected_negative_spend"
-              }
-            },
-            "Function": 0
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "c0b9439b706180550909",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "pipeline_health"
-                  }
-                },
-                "Property": "rejected_unmapped_source"
-              }
-            },
-            "Function": 0
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
-  }
+  "parentGroupName": "0a4255576997764dd08b"
 }

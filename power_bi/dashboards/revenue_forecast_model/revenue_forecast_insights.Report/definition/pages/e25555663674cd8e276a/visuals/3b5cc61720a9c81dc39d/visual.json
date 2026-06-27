@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
   "name": "3b5cc61720a9c81dc39d",
   "position": {
-    "x": 77.336621454993846,
-    "y": 127.84217016029594,
+    "x": 0,
+    "y": 33.908212184682874,
     "z": 0,
-    "height": 280.14796547472258,
-    "width": 691.29469790382245,
+    "height": 246.15384615384616,
+    "width": 691.435132032147,
     "tabOrder": 0
   },
   "visual": {
@@ -124,6 +124,46 @@
                   "Value": "'Predicted vs. Actual Revenue Over time'"
                 }
               }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualTooltip": [
+        {
+          "properties": {
+            "type": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Canvas'"
+                }
+              }
+            },
+            "section": {
+              "expr": {
+                "Literal": {
+                  "Value": "'ce0f94fe5f122174b749'"
+                }
+              }
             }
           }
         }
@@ -131,50 +171,5 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "f4f5be6ea3eb45de7988",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "calendar_date"
-              }
-            },
-            "Property": "Week Start Date"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "6e1d0100574010c77e3b",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "calculations"
-              }
-            },
-            "Property": "actual_next_week"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "38bdfc067a873a301010",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "calculations"
-              }
-            },
-            "Property": "pred_next_week"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
-  }
+  "parentGroupName": "60f9ee1ba0070098be05"
 }

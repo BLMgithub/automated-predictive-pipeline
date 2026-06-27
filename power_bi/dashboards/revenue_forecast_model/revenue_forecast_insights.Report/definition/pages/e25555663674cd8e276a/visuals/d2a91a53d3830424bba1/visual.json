@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
   "name": "d2a91a53d3830424bba1",
   "position": {
-    "x": 791.51664611590638,
-    "y": 456.12823674475959,
-    "z": 3000,
-    "height": 231.22071516646116,
-    "width": 413.51418002466096,
-    "tabOrder": 2000
+    "x": 850.00248354650967,
+    "y": 445.50786749887487,
+    "z": 0,
+    "height": 242.47990815154995,
+    "width": 413.68541905855341,
+    "tabOrder": 8000
   },
   "visual": {
     "visualType": "tableEx",
@@ -191,59 +191,21 @@
             }
           }
         }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "98a87b444479400662b8",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "pipeline_assertions"
-              }
-            },
-            "Property": "assertion_name"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "5e1a0e903885a501c002",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "pipeline_assertions"
-              }
-            },
-            "Property": "status"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "713beb580dd03bc80918",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "pipeline_assertions"
-                  }
-                },
-                "Property": "rows_flagged"
-              }
-            },
-            "Function": 0
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

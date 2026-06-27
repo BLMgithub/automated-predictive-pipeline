@@ -27,11 +27,11 @@ table features_weights
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	column std_weight
+	column standard_weight
 		dataType: double
-		lineageTag: 387256b9-03fa-4875-a1dd-7e1027155417
+		lineageTag: 52fff63a-d9e1-41ad-a095-f14f189b424e
 		summarizeBy: sum
-		sourceColumn: std_weight
+		sourceColumn: standard_weight
 
 		annotation SummarizationSetBy = Automatic
 
@@ -41,7 +41,7 @@ table features_weights
 		mode: import
 		source =
 				let
-				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false, BillingProject="automated-predictive-pipeline"]){[Name="automated-predictive-pipeline"]}[Data], "SELECT * FROM `automated-predictive-pipeline.published_dataset.features_weights`", null, [EnableFolding=true])
+				    Source = Value.NativeQuery(GoogleBigQuery.Database([Implementation="2.0", UseStorageApi=false, BillingProject="automated-predictive-pipeline"]){[Name="automated-predictive-pipeline"]}[Data], "SELECT #(lf)category,#(lf)feature,#(lf)raw_weight,#(lf)standard_weight,#(lf)FROM `automated-predictive-pipeline.published_dataset.features_weights`", null, [EnableFolding=true])
 				in
 				    Source
 

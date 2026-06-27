@@ -1,0 +1,10 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "8112bc45cb3a6f0634e5",
+  "displayName": "Tooltip-Traffic Source",
+  "displayOption": "ActualSize",
+  "height": 140,
+  "width": 320,
+  "visibility": "HiddenInViewMode",
+  "type": "Tooltip"
+}

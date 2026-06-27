@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
   "name": "991edb490d935450c483",
   "position": {
-    "x": 77.341435976039932,
-    "y": 419.141908373215,
-    "z": 2000,
-    "height": 268.31072749691742,
-    "width": 691.29469790382245,
-    "tabOrder": 3000
+    "x": 0,
+    "y": 41.065375302663483,
+    "z": 0,
+    "height": 227.0217917675545,
+    "width": 692.68765133171917,
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "clusteredColumnChart",
@@ -27,9 +27,9 @@
                 }
               },
               "queryRef": "predictions_evaluation.residuals (bins)",
-              "nativeQueryRef": "Residuals Bin ($)",
+              "nativeQueryRef": "Residual Bin Size ($)",
               "active": true,
-              "displayName": "Residuals Bin ($)"
+              "displayName": "Residual Bin Size ($)"
             }
           ]
         },
@@ -75,6 +75,21 @@
         ]
       }
     },
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Residuals Bins'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -85,6 +100,33 @@
                   "Value": "'Prediction Residuals Histrogram'"
                 }
               }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualTooltip": [
+        {
+          "properties": {
+            "type": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Canvas'"
+                }
+              }
+            },
+            "section": {
+              "expr": {
+                "Literal": {
+                  "Value": "'d110f58832257b9e7e11'"
+                }
+              }
             }
           }
         }
@@ -92,41 +134,5 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "acec95f7e7929ee86458",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "predictions_evaluation"
-              }
-            },
-            "Property": "residuals (bins)"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "da0d5de73d4c807419cb",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "predictions_evaluation"
-                  }
-                },
-                "Property": "residuals"
-              }
-            },
-            "Function": 5
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
-  }
+  "parentGroupName": "e049c58e8dcc1fef1084"
 }

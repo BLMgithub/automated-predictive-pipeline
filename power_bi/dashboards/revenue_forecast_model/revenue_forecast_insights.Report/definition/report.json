@@ -33,6 +33,19 @@
           }
         }
       }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
     ]
   },
   "resourcePackages": [
@@ -52,9 +65,24 @@
       "type": "RegisteredResources",
       "items": [
         {
+          "name": "Live_Prediction_Page5111849972698947.svg",
+          "path": "Live_Prediction_Page5111849972698947.svg",
+          "type": "Image"
+        },
+        {
           "name": "minimalist-theme6184548124597571.json",
           "path": "minimalist-theme6184548124597571.json",
           "type": "CustomTheme"
+        },
+        {
+          "name": "Model_Confidence_Page5243090258926284.svg",
+          "path": "Model_Confidence_Page5243090258926284.svg",
+          "type": "Image"
+        },
+        {
+          "name": "Revenue_Drivers_Page6454866180308625.svg",
+          "path": "Revenue_Drivers_Page6454866180308625.svg",
+          "type": "Image"
         }
       ]
     }

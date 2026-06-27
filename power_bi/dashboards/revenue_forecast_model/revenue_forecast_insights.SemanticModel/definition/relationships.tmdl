@@ -11,3 +11,8 @@ relationship a64b49c5-6650-334e-bc08-8dde57069f03
 	fromColumn: predictions_nextweek.week_start
 	toColumn: calendar_date.Date
 
+relationship e97c7ab4-0ea0-424d-b443-3f0b95bd12c8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: model_output_freshness.last_modified_time
+	toColumn: LocalDateTable_80bfe36f-a704-4b3a-8ec5-724dc9997043.Date
+
